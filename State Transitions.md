@@ -1,11 +1,11 @@
-State Machine Layout
-**Data Rates:**
-  High = 35hz
-  Medium = 10hz
-  Low = 1Hz
-**Startup / State-Switcher**
-	Trigger: Power-on
-	Connect sensors
+State Machine Layout\
+**Data Rates:**\
+  	High = 35hz\
+  	Medium = 10hz\
+ 	Low = 1Hz\
+**Startup / State-Switcher**\
+	Trigger: Power-on\
+	Connect sensors\
 	Accels
 	Barometer & Temperature Sensor
 	Zero altitude until State 3
