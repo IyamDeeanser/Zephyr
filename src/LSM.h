@@ -26,7 +26,3 @@ void UpdateAccelArr() {
 void UpdateGyroArr() {
     AccGyr.Get_G_Axes(gyroArr);
 }
-
-// brian is a weirdo
-// tim is a weirdo
-// test
