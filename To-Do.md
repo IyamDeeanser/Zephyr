@@ -7,5 +7,7 @@ CanSat Flight Code To-Do:
 - Replace pitchServo objects with RWmotor objects
 - Add telemetry board / sik radio functions and transmitting functions
 	- Include setpoint control and manual state change code
+- Add separate SD card and telemetry logging speeds
+- Change data logged to match GSC software variables
 - Add camera control function
 - Add GPS Functions
