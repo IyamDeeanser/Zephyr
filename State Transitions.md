@@ -1,22 +1,22 @@
 State Machine Layout\
-**Data Rates:**\
-  	High = 35hz\
-  	Medium = 10hz\
- 	Low = 1Hz\
-**Startup / State-Switcher**\
-	Trigger: Power-on\
-	Connect sensors\
-	Accels\
-	Barometer & Temperature Sensor\
-	Zero altitude until State 3\
-	Gyros\
+**Data Rates:**\  
+  	High = 35hz\  
+  	Medium = 10hz\  
+ 	Low = 1Hz\  
+**Startup / State-Switcher**\  
+	Trigger: Power-on\  
+	Connect sensors\  
+	Accels\  
+	Barometer & Temperature Sensor\  
+	Zero altitude until State 3\  
+	Gyros\  
 	Select state given condition\
-**Manual State-Switcher**\
-	If signal received from ground, select state based on signal\
-**State 1: Ground Idle**\
-	Trigger: Selection by State 0\
-	Connect telemetry radio\
-	Low-hertz refresh rate on telemetry \
+**Manual State-Switcher**\  
+	If signal received from ground, select state based on signal\  
+**State 1: Ground Idle**\  
+	Trigger: Selection by State 0\  
+	Connect telemetry radio\  
+	Low-hertz refresh rate on telemetry \  
 **State 2: Launch Ready**\
 	Trigger: Manual\
 	GPS Connection\
