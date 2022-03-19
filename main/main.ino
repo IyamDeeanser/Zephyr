@@ -1,3 +1,4 @@
+// ? Do we need to include the String library?
 //New and improved version by Timothy Cai
 #include "BMI088.h"
 #include <TimerOne.h> //hardware timing library
@@ -24,6 +25,11 @@ public:
     x = newX;
     y = newY;
     z = newZ;
+  }
+
+  String toString() {
+    // ! might be bugged bc first value isn't of type string. (prob not tho dw)
+    return x + ", " + y ", " + z;
   }
 };
 
@@ -127,6 +133,7 @@ bool settingsWrite = true;
 void setup() 
 {
   Serial.begin(115200); // don't forget to set the baud rate to this too
+  // 57600 for sik radio
 
   //initialize components
   accelInitialize();
@@ -530,6 +537,7 @@ void dataLogging()
   //write data to the SD card
   dataFile = SD.open(datafilename, FILE_WRITE);
 
+  // todo make a string that stores all the data so u dont have to write it twice
   if (dataFile && datalog) {
     dataFile.print(gyroData.x);            dataFile.print(", ");
     dataFile.print(gyroData.y);            dataFile.print(", ");
@@ -569,7 +577,7 @@ void dataLogging()
   {
     dataFile.close();
   }
-  // if the file didn't open, print an error:
+  // if the file didn'   open, print an error:
   else {
     Serial.println("error opening data file");
   }
