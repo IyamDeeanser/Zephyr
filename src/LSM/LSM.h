@@ -7,8 +7,9 @@
 #define SD_CARD_h
 
 #include <Arduino.h>
-#include <Arduino_LSM6DS3.h>
 
+#include <LSM6DSLSensor.h>
+#include <../Vec3/
 // Initialization
 // (I2C Initialization)
 
