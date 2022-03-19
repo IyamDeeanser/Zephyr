@@ -133,8 +133,6 @@ bool settingsWrite = true;
 void setup() 
 {
   Serial.begin(115200); // don't forget to set the baud rate to this too
-  // 57600 for sik radio
-
   //initialize components
   accelInitialize();
   oriInitialize();
