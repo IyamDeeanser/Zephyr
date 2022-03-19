@@ -1,4 +1,3 @@
-// # ADD ifndef for all .h files & transfer definition to corrisponding .cpp files
 // ? Do we need to include the String library?
 //New and improved version by Timothy Cai
 #include "BMI088.h"
