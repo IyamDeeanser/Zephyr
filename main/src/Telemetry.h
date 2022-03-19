@@ -1,15 +1,15 @@
-// Telemetry Code Here
+// Telemetry Functions 
 // written by Brian
 // Documentation: https://www.youtube.com/watch?v=qCjCRBLv_VM
 
 // ! STRING LIB NEEDS TO BE INCLUDED!
 
-// @ pre-condition: serial port is called before any other fucntion
 namespace TELE {
     // @ Setup
     void Initialize() {
         Serial.begin(9600);
     }
+    
     // @ sends string through serial port
     void Send(const String & s) {
         Serial.print(s);
