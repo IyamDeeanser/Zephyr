@@ -64,8 +64,6 @@ vec3 gyroData;
 vec3 gyroBias;
 PID rollData;
 File dataFile, settingsFile;
-Bmi088Accel accel(Wire, 0x18);
-Bmi088Gyro gyro(Wire, 0x68);
 Servo pitchServo; //todo: change to h bridge motor
 
 //pins
@@ -73,8 +71,7 @@ const int LED_R = ~;
 const int LED_G = ~;
 const int LED_B = ~;
 const int Buzzer = ~;
-const int pitchPin = ~;
-const int yawPin = ~;
+const int rollPin = ~;
 const int chipSelect = ~;
 
 //variable initializers
@@ -304,14 +301,6 @@ void createSettings()
       settingsFile.print("Kp Yaw:,");                           settingsFile.println(Kp);
       settingsFile.print("Ki Yaw:,");                           settingsFile.println(Ki);
       settingsFile.print("Kd Yaw:,");                           settingsFile.println(Kd);
-      settingsFile.print("TVC Max X Limit:,");                  settingsFile.println(maxAmount);
-      settingsFile.print("TVC Max Y Limit:,");                  settingsFile.println(maxAmount);
-      settingsFile.print("TVC Min X Limit:,");                  settingsFile.println(minAmount);
-      settingsFile.print("TVC Min Y Limit:,");                  settingsFile.println(minAmount);
-      settingsFile.print("TVC Gear Ratio X,");                  settingsFile.println(gearRatio);
-      settingsFile.print("TVC Gear Ratio Y,");                  settingsFile.println(gearRatio);
-      settingsFile.print("TVC Offset X:,");                     settingsFile.println(TVCOffset);
-      settingsFile.print("TVC Offset Y:,");                     settingsFile.println(TVCOffset);
       settingsFile.print("Setpoint:,");                         settingsFile.println(setpoint);
       settingsFile.print("Gyroscope Bias X:,");                 settingsFile.println(gyroBias.x);
       settingsFile.print("Gyroscope Bias Y:,");                 settingsFile.println(gyroBias.y);

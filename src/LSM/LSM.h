@@ -20,8 +20,8 @@ class Acc_Gyr
 private:
     TwoWire dev_i2c;
     LSM6DSLSensor AccGyr;
-    int32_t accelArr[3];
-    int32_t gyroArr[3];
+    float accelArr[3];
+    float gyroArr[3];
 public:
     Acc_Gyr();
     void UpdateAccelArr();
