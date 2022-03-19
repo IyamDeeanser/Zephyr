@@ -14,7 +14,7 @@ Acc_Gyr::Acc_Gyr()
 //these two functions update accelerometer & gyro arrays
 void Acc_Gyr::UpdateAccelArr() {
     AccGyr.Get_X_Axes(accelArr);
-}
+} 
 
 void Acc_Gyr::UpdateGyroArr() {
     AccGyr.Get_G_Axes(gyroArr);
