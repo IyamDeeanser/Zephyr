@@ -17,7 +17,9 @@ z = newZ;
 
 String vec3::toString() {
     const int DECIMAL_PLACES = 3;
-    return String(x, DECIMAL_PLACES) + ", " 
+    
+    return 
+        String(x, DECIMAL_PLACES) + ", " 
         + String(y, DECIMAL_PLACES) + ", " 
         + String(z, DECIMAL_PLACES);
 }

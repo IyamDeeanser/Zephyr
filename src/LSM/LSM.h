@@ -3,13 +3,14 @@
 // Written by: Brian
 
 // ! ACCEL & GYRO are in int32_t - may cause problems since most of our data is in float
-#ifndef SD_CARD_h
-#define SD_CARD_h
+#ifndef LMS_h
+#define LMS_h
 
 #include <Arduino.h>
 
 #include <LSM6DSLSensor.h>
-#include <../Vec3/
+
+#include "../Vec3/Vec3.h"
 // Initialization
 // (I2C Initialization)
 

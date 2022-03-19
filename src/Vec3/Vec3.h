@@ -6,6 +6,8 @@
 #ifndef VEC3_h
 #define VEC3_h
 
+#include <Arduino.h>
+
 class vec3{
 public:
   float x,y,z;
