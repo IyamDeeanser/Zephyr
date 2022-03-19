@@ -1,3 +1,4 @@
+// # ADD ifndef for all .h files & transfer definition to corrisponding .cpp files
 // ? Do we need to include the String library?
 //New and improved version by Timothy Cai
 #include "BMI088.h"
@@ -7,31 +8,6 @@
 #include <SD.h>
 #include <cstdio>
 
-//classes
-class vec3{
-public:
-  float x,y,z;
-
-  vec3(float x,float y, float z)
-  : x(x),y(y),z(z) {}
-
-  vec3(float n)
-  : vec3(n,n,n) {}
-
-  vec3()
-  : vec3(0) {}
-
-  void set(float newX, float newY, float newZ) {
-    x = newX;
-    y = newY;
-    z = newZ;
-  }
-
-  String toString() {
-    // ! might be bugged bc first value isn't of type string. (prob not tho dw)
-    return x + ", " + y ", " + z;
-  }
-};
 
 class PID{
 public:
