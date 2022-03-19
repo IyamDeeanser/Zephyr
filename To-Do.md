@@ -6,7 +6,7 @@ CanSat Flight Code To-Do:
 	- Subsection of barometer is temperature sensor
 - Replace pitchServo objects with RWmotor objects
 - Replace correct pins with new board pins
-- Add telemetry board / sik radio functions and transmitting functions
+- ~~Add telemetry board / sik radio functions and transmitting functions~~
 	- Include setpoint control and manual state change code
 - Add separate SD card and telemetry logging speeds
 - Change data logged to match GSC software variables
