@@ -9,6 +9,7 @@
 #include <Arduino.h>
 
 #include <LSM6DSLSensor.h>
+#include <LSM6DSL_ACC_GYRO_Driver.h>
 
 #include "../Vec3/Vec3.h"
 // Initialization
@@ -21,13 +22,12 @@ class Acc_Gyr
 private:
     TwoWire dev_i2c;
     LSM6DSLSensor AccGyr;
-    float accelArr[3];
-    float gyroArr[3];
+    int32_t accelerometer[3];
+    int32_t gyroscope[3];
 public:
     Acc_Gyr();
     void UpdateAccelArr();
     void UpdateGyroArr();
-    ~Acc_Gyr();
 };
 
 #endif
