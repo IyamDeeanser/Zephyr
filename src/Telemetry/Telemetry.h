@@ -2,7 +2,6 @@
 // written by Brian
 // Documentation: https://www.youtube.com/watch?v=qCjCRBLv_VM
 
-// ! STRING LIB NEEDS TO BE INCLUDED!
 #ifndef TELEMETRY_H
 #define TELEMETRY_H
 

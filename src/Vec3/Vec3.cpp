@@ -10,9 +10,9 @@ vec3::vec3()
 : vec3(0) {}
 
 void vec3::set(float newX, float newY, float newZ) {
-x = newX;
-y = newY;
-z = newZ;
+    this->x = newX;
+    this->y = newY;
+    this->z = newZ;
 }
 
 String vec3::toString() {
