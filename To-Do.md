@@ -12,4 +12,3 @@ CanSat Flight Code To-Do:
 - Change data logged to match GSC software variables
 - Add camera control function
 - Add GPS Functions
-- ADD IFnDEF CODE TO LIBS (https://www.arduino.cc/en/Hacking/libraryTutorial)
