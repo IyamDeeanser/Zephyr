@@ -1,8 +1,7 @@
 // LMS6DSL Gyroscope & Accelerometer Functions
 // Documentation: https://github.com/stm32duino/LSM6DSL 
-// Written by: Brian
+// https://os.mbed.com/teams/ST/code/LSM6DSL/docs/tip/LSM6DSLSensor_8cpp_source.html 
 
-// ! ACCEL & GYRO are in int32_t - may cause problems since most of our data is in float
 #ifndef LMS_h
 #define LMS_h
 

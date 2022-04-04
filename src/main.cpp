@@ -2,16 +2,11 @@
 #include "States/States.h"
 #include "Telemetry/Telemetry.h"
 #include "Vec3/Vec3.h"
+#include "Settings/Settings.h"
 
+void TVC(const States & State) {
 
-
-void setup() {
-  // initialize
-  States STATE;
-  Telemetry TELE;
-  // @ SD Card Init
-
-  switch (STATE)
+  switch (State)
   {
   case GROUND_IDLE:
     break;
@@ -19,7 +14,16 @@ void setup() {
   default:
     break;
   }
+}
 
+void setup() {
+  // initialize
+  States State;
+  Telemetry Tele;
+  // @ SD Card Init
+
+  Tele.Sendln("INITALIZED!");
+  
 }
 
 void loop() {}   
