@@ -36,6 +36,11 @@ void SDCard::Logln(const String & s)
     }
 }
 
+void SDCard::SetRate(const float & n)
+{
+    dataSpacer = n;
+}
+
 // @ needs to be able to access totaltime
 void SDCard::logcheck()
 {
@@ -51,11 +56,6 @@ void SDCard::logcheck()
             datalog = false;
         }
     }
-}
-
-void SDCard::SetRate(const float & n)
-{
-    dataSpacer = n;
 }
 
 void SDCard::dataInitialize()
