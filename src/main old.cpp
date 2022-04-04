@@ -2,7 +2,7 @@
 // ? Do we need to include the String library?
 //New and improved version by Timothy Cai
 #include <Arduino.h>
-#include <TimerOne.h> //hardware timing library
+// #include <TimerOne.h> //hardware timing library
 #include <Servo.h>
 #include <SPI.h>
 #include <SD.h>
