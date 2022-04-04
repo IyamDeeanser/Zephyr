@@ -10,12 +10,17 @@ class Timer {
     previousTime, 
     lastLogTime, 
     lastTlmTransmitTime, 
-    launchTime, 
+    launchTime = 0, 
+    timeSinceLaunch,
     burnoutTime, 
     apogeeDetectStartTime, 
     landingDetectStartTime;
 
     void update();
+    void logLaunch();
+    void logTransmit();
+    void logBurnout();
+    void logApogee();
 };
 
 #endif

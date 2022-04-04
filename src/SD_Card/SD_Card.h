@@ -5,6 +5,7 @@
 
 #include <SD.h> 
 #include <Arduino.h>
+#include "Timer.cpp"
 
 class SDCard
 {
