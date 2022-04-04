@@ -76,7 +76,7 @@ void SDCard::dataInitialize()
 
     // if the file opened okay, write the csv headings to it:
     if (dataFile) {
-        dataFile.print(/*datatype here*/);
+        dataFile.print("/*datatype here*/");
         dataFile.println(/*last dataset*/);
 
     // close the file:
