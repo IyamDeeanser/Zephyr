@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <TimerOne.h>
 #include "States/States.h"
 #include "Telemetry/Telemetry.h"
 #include "Vec3/Vec3.h"

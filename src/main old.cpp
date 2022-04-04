@@ -8,25 +8,7 @@
 #include <SD.h>
 #include <cstdio>
 #include "Vec3/Vec3.h"
-
-class PID{
-public:
-  float error;
-  float lastError;
-  float totalError;
-  float P, I, D;
-  float Output;
-
-  PID() {
-    error = 0;
-    lastError = 0;
-    totalError = 0;
-    P = 0;
-    I = 0;
-    D = 0;
-    Output = 0;
-  }
-};
+#include "PID/PID.h"
 
 //state representation
 enum State {
