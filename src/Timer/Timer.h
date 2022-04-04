@@ -5,9 +5,6 @@ class Timer {
   public:
     float deltaTimeSec, deltaTimeMicro, flightTimeSec;
 
-    int loggingFrequency;
-    int transmitFrequency;
-
     //Timer variables
     unsigned long currentTime, 
     previousTime, 

@@ -6,8 +6,7 @@
 #define LMS_h
 
 #include <Arduino.h>
-
-#include <LSM6DSLSensor.h>
+#include <Servo.h>
 #include <LSM6DSL_ACC_GYRO_Driver.h>
 
 #include "../Vec3/Vec3.h"

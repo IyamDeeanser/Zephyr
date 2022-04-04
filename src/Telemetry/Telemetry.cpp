@@ -2,7 +2,7 @@
 
 Telemetry::Telemetry(/* args */)
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
 }
 
 void Telemetry::Send(const String & s) {
