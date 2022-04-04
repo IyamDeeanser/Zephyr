@@ -3,9 +3,6 @@
 
 void Timer::update(){
     previousTime = currentTime;
-    //currentTime += loopTime;
-
-    //none of this is needed when you can just add looptime in a hardware timer
     currentTime = micros();
     timeSinceLaunch = currentTime - launchTime;
     deltaTimeMicro = currentTime - previousTime;
