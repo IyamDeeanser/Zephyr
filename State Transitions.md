@@ -10,12 +10,12 @@ State Machine Layout\
 	- Barometer & Temperature Sensor\
 	- Zero altitude until State 3\
 	- Gyros\
-	- Select state given condition\
+	- Select state given condition BROWNOUT SAFEGUARD\
 **Manual State-Switcher**\
 	- If signal received from ground, select state based on signal\
 **State 1: Ground Idle**\
 	- Trigger: Selection by State 0\
-	- Connect telemetry radio\
+	- Connect telemetry radio (CONFIRM CONNECTION TO GROUND STATION)\
 	- Low-hertz refresh rate on telemetry\
 **State 2: Launch Ready**\
 	- Trigger: Manual\
@@ -52,7 +52,7 @@ State Machine Layout\
 	- Trigger: Manual\
 	- Telemetry will send a new PID setpoint\
 	- Note that inputs wll be constantly sent until it is confirmed by an output, or a new input is sent\
-**State 8: Landing**\
+**State 8: Landing (abt to land)**\
 	- Trigger: Barometer < 50m\
 	- Camera manual disable, or automatically disabled when switched to State 9\
 	- DC Motor disabled\

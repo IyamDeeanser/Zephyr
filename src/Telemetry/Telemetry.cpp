@@ -2,11 +2,11 @@
 
 Telemetry::Telemetry(/* args */)
 {
-    Serial.begin(115200);
+    Serial1.begin(115200);
 }
 
 void Telemetry::Send(const String & s) {
-    Serial.print(s);
+    Serial1.print(s);
 }
 
 void Telemetry::Sendln(const String & s) {
@@ -15,8 +15,8 @@ void Telemetry::Sendln(const String & s) {
 
 String Telemetry::Read() {
     static String result;
-    while (Serial.available() > 0) {
-        char c = Serial.read();
+    while (Serial1.available() > 0) {
+        char c = Serial1.read();
         if(c == '<') {
             result = "";
         } else if (c == '>' || c == '\n') {

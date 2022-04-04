@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <LSM6DSL_ACC_GYRO_Driver.h>
+#include <LSM6DSLSensor.h>
 
 #include "../Vec3/Vec3.h"
 // Initialization
