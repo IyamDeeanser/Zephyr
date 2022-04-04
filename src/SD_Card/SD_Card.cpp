@@ -98,10 +98,10 @@ void SDCard::settingsInitialize()
         
         // if the file opened okay, write to it:
         if (settingsFile) {
-        settingsFile.print(/*"dataname"*/); settingsFile.println(/*data*/);
+            settingsFile.print(/*"dataname"*/); settingsFile.println(/*data*/);
 
-        // close the file:
-        settingsFile.close();
+            // close the file:
+            settingsFile.close();
         }
         
         else {
