@@ -5,7 +5,7 @@
 
 class IMU {
   public:
-    //Raw gyro readings
+    //Raw gyro readings   Tims note: this is not raw. theres debiasing processing
     float bodyGyroX_Rad, bodyGyroY_Rad, bodyGyroZ_Rad;
     float bodyGyroX_Deg, bodyGyroY_Deg, bodyGyroZ_Deg;
 
