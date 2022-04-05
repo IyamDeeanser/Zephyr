@@ -1,7 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-class Timer {
+class Time {
   public:
     float deltaTimeSec, deltaTimeMicro, flightTimeSec;
 

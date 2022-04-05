@@ -1,7 +1,7 @@
 #include "Timer.h"
 #include "Arduino.h"
 
-void Timer::update(){
+void Time::update(){
     previousTime = currentTime;
     currentTime = micros();
     deltaTimeMicro = currentTime - previousTime;
