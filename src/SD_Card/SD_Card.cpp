@@ -1,20 +1,18 @@
 #include "SD_Card.h"
 
 //creates flight file
-SDCard::SDCard()
+SD_Card::SD_Card()
 {
     if (!SD.begin(/*chipselect*/)) {
-    //write to telemetry that it isn't working
+        Serial1.println("");
     //buzzer or some other signal
     }
 
     dataInitialize();
     settingsInitialize();
-
-    return;
 }
 
-void SDCard::Log(const String & s)
+void SD_Card::Log(const String & s)
 {
     logcheck();
 
@@ -25,7 +23,7 @@ void SDCard::Log(const String & s)
     }
 }
 
-void SDCard::Logln(const String & s)
+void SD_Card::Logln(const String & s)
 {
     logcheck();
 
@@ -36,13 +34,13 @@ void SDCard::Logln(const String & s)
     }
 }
 
-void SDCard::SetRate(const float & n)
+void SD_Card::SetRate(const float & n)
 {
     dataSpacer = n;
 }
 
 // @ needs to be able to access totaltime
-void SDCard::logcheck()
+void SD_Card::logcheck()
 {
     if(logDelay)
     {
@@ -58,7 +56,7 @@ void SDCard::logcheck()
     }
 }
 
-void SDCard::dataInitialize()
+void SD_Card::dataInitialize()
 {
     filenum = 1;
     while(true) 
@@ -87,7 +85,7 @@ void SDCard::dataInitialize()
     }
 }
 
-void SDCard::settingsInitialize()
+void SD_Card::settingsInitialize()
 {
     if(settingsWrite)
     {

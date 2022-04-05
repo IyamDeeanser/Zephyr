@@ -7,7 +7,7 @@
 #include <Arduino.h>
 #include "../Timer/Timer.h"
 
-class SDCard
+class SD_Card
 {
 private:
     File dataFile, settingsFile;
@@ -19,7 +19,7 @@ private:
     void dataInitialize();
     void settingsInitialize();
 public:
-    SDCard();
+    SD_Card();
 
     // @ logs FORMATTED strings to the SD card
     void Log(const String & s);

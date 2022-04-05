@@ -5,22 +5,20 @@ class Timer {
   public:
     float deltaTimeSec, deltaTimeMicro, flightTimeSec;
 
+    int loggingFrequency;
+    int transmitFrequency;
+
     //Timer variables
     unsigned long currentTime, 
     previousTime, 
     lastLogTime, 
     lastTlmTransmitTime, 
-    launchTime = 0, 
-    timeSinceLaunch,
+    launchTime, 
     burnoutTime, 
     apogeeDetectStartTime, 
     landingDetectStartTime;
 
     void update();
-    void logLaunch();
-    void logTransmit();
-    void logBurnout();
-    void logApogee();
 };
 
 #endif
