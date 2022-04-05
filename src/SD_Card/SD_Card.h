@@ -15,15 +15,15 @@ private:
     int filenum;
     float counter = 0, dataSpacer = 0; 
     bool logDelay = true, SDCheck = false, settingsWrite = true, datalog = true;
-    void logcheck();
+    void logcheck(Timer time);
     void dataInitialize();
     void settingsInitialize();
 public:
-    SD_Card();
+    SD_Card(Timer time);
 
     // @ logs FORMATTED strings to the SD card
-    void Log(const String & s);
-    void Logln(const String & s);
+    void Log(const String & s, Timer time);
+    void Logln(const String & s, Timer time);
     // @ changes the datalog rate in terms of time
     void SetRate(const float & n);
 

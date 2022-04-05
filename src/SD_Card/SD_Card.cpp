@@ -12,9 +12,9 @@ SD_Card::SD_Card()
     settingsInitialize();
 }
 
-void SD_Card::Log(const String & s)
+void SD_Card::Log(const String & s, Timer time)
 {
-    logcheck();
+    logcheck(time);
 
     if (dataFile && datalog) {
         dataFile = SD.open(datafilename, FILE_WRITE);
@@ -23,9 +23,9 @@ void SD_Card::Log(const String & s)
     }
 }
 
-void SD_Card::Logln(const String & s)
+void SD_Card::Logln(const String & s, Timer time)
 {
-    logcheck();
+    logcheck(time);
 
     if (dataFile && datalog) {
         dataFile = SD.open(datafilename, FILE_WRITE);
@@ -40,14 +40,14 @@ void SD_Card::SetRate(const float & n)
 }
 
 // @ needs to be able to access totaltime
-void SD_Card::logcheck()
+void SD_Card::logcheck(Timer time)
 {
     if(logDelay)
     {
-        if((totalTime-counter) > dataSpacer)
+        if((time.currentTime-counter) > dataSpacer)
         {
             datalog = true;
-            counter = totalTime;
+            counter = time.currentTime;
         }
         else
         {
