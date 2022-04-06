@@ -13,18 +13,10 @@ Timer Time;
 Barometer Baro;
 SD_Card SD;
 
-
-// SD_Card SD;
-
 void setup() {
   // initialize
   Serial1.begin(115200);
   Serial1.println("BEEP BEEP BOOP BOOP! WAKING UP!");
-
-  while(true) {
-    Setup_Loop();
-    delay(100); // ! BRUH
-  }
 }
 
 void loop() 
@@ -79,3 +71,11 @@ void loop()
       break;
   }
 }   
+
+void states()
+{
+  if (/*acceleration check*/)
+  {
+    State = LAUNCH_READY;
+  }
+}
