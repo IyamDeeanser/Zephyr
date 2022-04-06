@@ -18,7 +18,8 @@ SD_Card SD;
 
 void setup() {
   // initialize
-  Tele.Sendln("BEEP BEEP BOOP BOOP! WAKING UP!");
+  Serial1.begin(115200);
+  Serial1.println("BEEP BEEP BOOP BOOP! WAKING UP!");
 
   while(true) {
     Setup_Loop();
