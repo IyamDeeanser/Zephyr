@@ -18,6 +18,7 @@ private:
     void logcheck(Timer time);
     void dataInitialize();
     void settingsInitialize();
+    SD_Card();
 public:
     SD_Card(Timer time);
 
