@@ -1,0 +1,3 @@
+1) Test Vec3 Function (esp the toString func)
+
+test 
