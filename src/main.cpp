@@ -27,21 +27,55 @@ void setup() {
   }
 }
 
-void Setup_Loop() {
-  Time.update();
-  State_Machine();
-}
+void loop() 
+{
+  switch(State) {
+    case GROUND_IDLE:
 
-void State_Machine() {
-  switch (State)
-  {
-  case GROUND_IDLE:
-    break;
-  
-  default:
-    break;
+      break;
+
+    case LAUNCH_READY:
+
+      break;
+
+    case POWERED_ASCENT:
+
+      break;
+
+    case UNPOWERED_ASCENT:
+
+      break;
+    
+    case SEPARATION:
+
+      break;
+
+    case APOGEE:
+
+      break;
+
+    case PARACHUTE_DESCENT:
+
+      break;
+
+    case ROLL_CONTROL:
+
+      break;
+
+    case MANUAL_ROLL_CONTROL:
+
+      break;
+
+    case LANDING:
+
+      break;
+
+    case MISSION_COMPLETE:
+
+      break;
+
+    case ABORT:
+
+      break;
   }
-}
-
-
-void loop() {}   
+}   
