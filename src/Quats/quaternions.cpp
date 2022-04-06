@@ -1,5 +1,8 @@
 #include "quaternions.h"
 
+Quat::Quat()
+{}
+
 void Quat::calculateQuaternion(IMU gyro, Timer time)
 {
     //Get the current angular rate

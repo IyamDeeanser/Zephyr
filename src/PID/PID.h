@@ -1,17 +1,19 @@
 #ifndef PID_H
 #define PID_H
 
+#include "../Timer/Timer.h"
+#include "../IMU/IMU.h"
+
 class PID{
-public:
+private:
   float error = 0;
   float lastError = 0;
   float totalError = 0;
-  float P = 0, I = 0, D = 0;
+  float Kp = 0, Ki = 0, Kd = 0;
+public:
   float Output = 0;
-
-//   PID()
-//   : error(0), lastError(0), totalError(0), P(0), I(0), D(0), Output(0) {
-//   }
+  PID PID();
+  void calculate(Timer time);
 };
 
 #endif
