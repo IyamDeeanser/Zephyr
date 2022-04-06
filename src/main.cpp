@@ -4,11 +4,16 @@
 #include "Vec3/Vec3.h"
 #include "Settings/Settings.h"
 #include "Timer/Timer.h"
-// #include "SD_Card/SD_Card.h"
+#include "Baro/Baro.h"
+#include "SD_Card/SD_Card.h"
 
 States State;
 Telemetry Tele;
 Timer Time;
+Barometer Baro;
+SD_Card SD;
+
+
 // SD_Card SD;
 
 void setup() {
