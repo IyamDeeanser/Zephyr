@@ -1,38 +1,37 @@
 #include "Telemetry.h"
 
-void Telemetry::transmit(float oriXIDeg, float oriYIDeg, float oriZIDeg, float gyroXBDps, float gyroYBDps, float gyroZBDps, float accelXBMS, float accelYBMS, float accelZBMS, float altEstimateM, float tvcY, float tvcZ, float rwX, float baroAltBias, float velXMS, float pressure_hPa, float tempIMUC, float tempBaroC, float voltage, int state, bool abort, bool abortEnabled, float massEstKg, int p1f, int p2f, int p3f, int p1c, int p2c, int p3c, float onTimeSec, float flightTimeSec){
-    Serial1.print("TLM"); //Required prefix
-    Serial1.print(oriXIDeg, 3);           Serial1.print(",");
-    Serial1.print(oriYIDeg, 3);           Serial1.print(",");
-    Serial1.print(oriZIDeg, 3);           Serial1.print(",");
-    Serial1.print(gyroXBDps, 3);          Serial1.print(",");
-    Serial1.print(gyroYBDps, 3);          Serial1.print(",");
-    Serial1.print(gyroZBDps, 3);          Serial1.print(",");
-    Serial1.print(accelXBMS, 3);          Serial1.print(",");
-    Serial1.print(accelYBMS, 3);          Serial1.print(",");
-    Serial1.print(accelZBMS, 3);          Serial1.print(",");
-    Serial1.print(altEstimateM, 3);       Serial1.print(",");
-    Serial1.print(tvcY, 3);               Serial1.print(",");
-    Serial1.print(tvcZ, 3);               Serial1.print(",");
-    Serial1.print(rwX, 3);                Serial1.print(",");
-    Serial1.print(baroAltBias, 3);        Serial1.print(",");
-    Serial1.print(velXMS, 3);             Serial1.print(",");
-    Serial1.print(pressure_hPa, 3);       Serial1.print(",");
-    Serial1.print(tempIMUC, 3);           Serial1.print(",");
-    Serial1.print(tempBaroC, 3);          Serial1.print(",");
-    Serial1.print(voltage, 2);            Serial1.print(",");
-    Serial1.print(state);                 Serial1.print(","); 
-    Serial1.print(abort);                 Serial1.print(",");
-    Serial1.print(abortEnabled);          Serial1.print(",");
-    Serial1.print(massEstKg, 3);          Serial1.print(","); 
-    Serial1.print(p1f);                   Serial1.print(",");
-    Serial1.print(p2f);                   Serial1.print(",");
-    Serial1.print(p3f);                   Serial1.print(",");
-    Serial1.print(p1c);                   Serial1.print(",");
-    Serial1.print(p2c);                   Serial1.print(",");
-    Serial1.print(p3c);                   Serial1.print(",");
-    Serial1.print(onTimeSec, 3);          Serial1.print(",");
-    Serial1.println(flightTimeSec, 3);
+void Telemetry::transmit(float ROTATLMoriX, float oriY, float oriZ, float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ, float altitude, float rwValue, float velocityX, float velocityY, float velocityZ, float positionX, float positionY, float positionZ, float batteryVoltage, float systemState, float cameraState, float reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude){
+    Serial1.print("<"); // prefix
+    Serial1.print(ROTATLMoriX, 3);           Serial1.print(",");
+    Serial1.print(oriY, 3);           Serial1.print(",");
+    Serial1.print(oriZ, 3);           Serial1.print(",");
+    Serial1.print(accelX, 3);           Serial1.print(",");
+    Serial1.print(accelY, 3);           Serial1.print(",");
+    Serial1.print(accelZ, 3);           Serial1.print(",");
+    Serial1.print(gyroX, 3);           Serial1.print(",");
+    Serial1.print(gyroY, 3);           Serial1.print(",");
+    Serial1.print(gyroZ, 3);           Serial1.print(",");
+    Serial1.print(altitude, 3);           Serial1.print(",");
+    Serial1.print(rwValue, 3);           Serial1.print(",");
+    Serial1.print(velocityX, 3);           Serial1.print(",");
+    Serial1.print(velocityY, 3);           Serial1.print(",");
+    Serial1.print(velocityZ, 3);           Serial1.print(",");
+    Serial1.print(positionX, 3);           Serial1.print(",");
+    Serial1.print(positionY, 3);           Serial1.print(",");
+    Serial1.print(positionZ, 3);           Serial1.print(",");
+    Serial1.print(batteryVoltage, 3);           Serial1.print(",");
+    Serial1.print(systemState, 3);           Serial1.print(",");
+    Serial1.print(cameraState, 3);           Serial1.print(",");
+    Serial1.print(reactionWheelState, 3);           Serial1.print(",");
+    Serial1.print(onTimeSec, 3);           Serial1.print(",");
+    Serial1.print(flightTimeSec, 3);           Serial1.print(",");
+    Serial1.print(pressure, 3);           Serial1.print(",");
+    Serial1.print(imuTemp, 3);           Serial1.print(",");
+    Serial1.print(baroTemp, 3);           Serial1.print(",");
+    Serial1.print(GPSSats, 3);           Serial1.print(",");
+    Serial1.print(latitude, 3);           Serial1.print(",");
+    Serial1.print(longitude, 3);
+    Serial1.print(">"); // suffix
 }
 
 void Telemetry::test() {
