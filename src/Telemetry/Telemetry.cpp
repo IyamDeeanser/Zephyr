@@ -38,3 +38,20 @@ void Telemetry::transmit(float oriXIDeg, float oriYIDeg, float oriZIDeg, float g
 void Telemetry::test() {
     Serial1.println("<TEST TRANSMIT BEEP BEEP BOOP BOOP>");
 }
+
+
+String Telemetry::read() {
+    static String result;
+    while (Serial1.available() > 0) {
+        char c = Serial1.read();
+        if(c == '<') {
+            result = "";
+        } else if (c == '>' || c == '\n') {
+            return result;
+        } else {
+            result += c;
+            if(result.length() > 27) result = "";
+        }
+    }
+    return "";
+}

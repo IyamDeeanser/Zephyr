@@ -41,6 +41,7 @@ class Telemetry {
 
         void test();
 
+        // Pre-conditions: Input must be <= 25 characters & be enclosed with <>
         String read();
 };
 
