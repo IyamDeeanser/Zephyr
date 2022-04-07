@@ -44,10 +44,10 @@ void SD_Card::logcheck(Timer time)
 {
     if(logDelay)
     {
-        if((time.currentTime-counter) > dataSpacer)
+        if((time.currentTimeSeconds-counter) > dataSpacer)
         {
             datalog = true;
-            counter = time.currentTime;
+            counter = time.currentTimeSeconds;
         }
         else
         {

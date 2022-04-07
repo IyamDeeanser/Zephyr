@@ -1,26 +1,47 @@
-// Telemetry Functions 
-// written by Brian
-// Documentation: https://www.youtube.com/watch?v=qCjCRBLv_VM
-
 #ifndef TELEMETRY_H
 #define TELEMETRY_H
 
 #include <Arduino.h>
 
-class Telemetry
-{
-private:
-    /* data */
-public:
-    Telemetry();
+class Telemetry {
+    public:
+        void transmit(
+            float oriXIDeg, 
+            float oriYIDeg, 
+            float oriZIDeg, 
+            float gyroXBDps, 
+            float gyroYBDps, 
+            float gyroZBDps, 
+            float accelXBMS, 
+            float accelYBMS, 
+            float accelZBMS, 
+            float altEstimateM, 
+            float tvcY, 
+            float tvcZ, 
+            float rwX, 
+            float baroAltBias, 
+            float velXMS, 
+            float pressure_hPa, 
+            float tempIMUC, 
+            float tempBaroC, 
+            float voltage, 
+            int state, 
+            bool abort, 
+            bool abortEnabled, 
+            float massEstKg, 
+            int p1f, 
+            int p2f, 
+            int p3f, 
+            int p1c, 
+            int p2c, 
+            int p3c, 
+            float onTimeSec, 
+            float flightTimeSec
+        );
 
-    // @ sends string through serial port
-    // void Send(const String & s);
-    // void Sendln(const String & s);
-    
-    // @ pre-condition: commands must be received in this format: <command>
-    // @ post-condition: returns command in string format. results empty string if no command
-    String Read();
+        void test();
+
+        String read();
 };
 
 #endif
