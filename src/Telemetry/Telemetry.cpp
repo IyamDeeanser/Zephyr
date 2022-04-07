@@ -39,6 +39,9 @@ void Telemetry::test() {
     Serial1.println("<TEST TRANSMIT BEEP BEEP BOOP BOOP>");
 }
 
+void Telemetry::sendStrln(const String & s) {
+    Serial1.println(s);
+}
 
 String Telemetry::read() {
     static String result;
