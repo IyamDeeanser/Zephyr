@@ -7,17 +7,20 @@
 #include "Baro/Baro.h"
 #include "SD_Card/SD_Card.h"
 #include "GPS/GPS.h"
+#include "Camera/Camera.h"
 
 States State;
 Telemetry Tele;
 Timer Time;
 Barometer Baro;
 SD_Card SD;
+Camera Cam;
 
 void setup() {
   // initialize
   Serial1.begin(115200);
   Serial1.println("BEEP BEEP BOOP BOOP! WAKING UP!");
+  Cam.initialize(); // initializes camera
 }
 
 void loop() 
