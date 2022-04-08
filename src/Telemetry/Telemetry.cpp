@@ -42,6 +42,7 @@ void Telemetry::sendStrln(const String & s) {
     Serial1.println(s);
 }
 
+// Theres a 'Seria.readString() function that does this better LOL
 String Telemetry::read() {
     static String result;
     while (Serial1.available() > 0) {
