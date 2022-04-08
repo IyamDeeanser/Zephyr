@@ -6,7 +6,7 @@
 class Telemetry {
     public:
         void transmit(
-            float ROTATLMoriX,
+            float oriX,
             float oriY,
             float oriZ,
             float accelX,
