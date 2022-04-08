@@ -6,6 +6,7 @@
 #include "Timer/Timer.h"
 #include "Baro/Baro.h"
 #include "SD_Card/SD_Card.h"
+#include "GPS/GPS.h"
 
 States State;
 Telemetry Tele;

@@ -1,7 +1,7 @@
 #include "Telemetry.h"
 
 void Telemetry::transmit(float ROTATLMoriX, float oriY, float oriZ, float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ, float altitude, float rwValue, float velocityX, float velocityY, float velocityZ, float positionX, float positionY, float positionZ, float batteryVoltage, float systemState, float cameraState, float reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude){
-    Serial1.print("<"); // prefix
+    Serial1.print("ROTATLM"); // prefix
     Serial1.print(ROTATLMoriX, 3);           Serial1.print(",");
     Serial1.print(oriY, 3);           Serial1.print(",");
     Serial1.print(oriZ, 3);           Serial1.print(",");
@@ -31,7 +31,6 @@ void Telemetry::transmit(float ROTATLMoriX, float oriY, float oriZ, float accelX
     Serial1.print(GPSSats, 3);           Serial1.print(",");
     Serial1.print(latitude, 3);           Serial1.print(",");
     Serial1.print(longitude, 3);
-    Serial1.print(">"); // suffix
 }
 
 void Telemetry::test() {
