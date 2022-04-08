@@ -1,7 +1,7 @@
 //GPS Implementation File
 //Written by: Vhea He
 
-#include <GPS.h>
+#include "GPS.h"
 
 GPS_Stats::GPS_Stats(){
 

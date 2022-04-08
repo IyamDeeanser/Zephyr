@@ -10,7 +10,7 @@ private:
   float error = 0;
   float lastError = 0;
   float totalError = 0;
-  float Kp = 0, Ki = 0, Kd = 0;
+  float Kp = 1, Ki = 0, Kd = 0;
   float P, I, D;
 public:
   float Output = 0;
