@@ -7,10 +7,10 @@ void Timer::update(){
 
     //none of this is needed when you can just add looptime in a hardware timer
     currentTimeMicrons = micros();
-    currentTimeSeconds = currentTimeMicrons / 1000000.0;
+    currentTimeSeconds = currentTimeMicrons / 1000.0;
     timeSinceLaunch = currentTimeMicrons - launchTime;
     deltaTimeMicro = currentTimeMicrons - previousTime;
-    deltaTimeSec = deltaTimeMicro / 1000000.0;
+    deltaTimeSec = deltaTimeMicro / 1000.0;
 }
 
 void Timer::logLaunch()
