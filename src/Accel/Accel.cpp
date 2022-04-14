@@ -1,16 +1,14 @@
 #include "Accel.h"
 
-void Accelerometer::begin(){
+bool Accelerometer::begin(){ 
     if( !kxAccel.begin()){
-        // ! DO SOMETHING 
-        // while(1);
+        return false;
     }
     if( !kxAccel.initialize(DEFAULT_SETTINGS)){ // ! is this default settings?
-        Serial.println("Could not initialize the chip.");
-        while(1);
+        return false;
     }
-
     kxAccel.setRange(KX134_RANGE64G);
+    return true;
 }
 
 

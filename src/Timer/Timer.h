@@ -3,7 +3,7 @@
 
 class Timer {
   public:
-    float deltaTimeSec, deltaTimeMicro;
+    float deltaTimeSec, deltaTimeMicro, currentTimeSec;
 
     int loggingFrequency;
     int transmitFrequency;
@@ -12,7 +12,6 @@ class Timer {
     unsigned long 
     currentTimeMicro, 
     previousTimeMicro, 
-    currentTimeSec, 
     previousTimeSec,
     lastLogTime,
     lastTlmTransmitTime, 

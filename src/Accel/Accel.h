@@ -10,7 +10,7 @@ private:
     outputData kxData;
 public:
     vec3 data; // access data
-    void begin(); // run ONCE in setup
+    bool begin(); // run ONCE in setup, returns false if failed to initalize
     void update(); // run periodically in loop to updata 'data'
 };
 
