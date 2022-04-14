@@ -1,7 +1,7 @@
 #include "Accel.h"
 
 void Accelerometer::begin(){
-    if( !kxAccel.begin() ){
+    if( !kxAccel.begin()){
         // ! DO SOMETHING 
         // while(1);
     }
@@ -10,7 +10,7 @@ void Accelerometer::begin(){
         while(1);
     }
 
-    kxAccel.setRange(KX134_RANGE32G);
+    kxAccel.setRange(KX134_RANGE64G);
 }
 
 
