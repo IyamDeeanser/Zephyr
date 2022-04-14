@@ -1,12 +1,22 @@
 #include "quaternions.h"
+#include <math.h>
+void Quat::begin()
+{
+    //Set the initial quaternion's orientation
+    pre_q[0] = 1;
+    pre_q[1] = 0;
+    pre_q[2] = 0;
+    pre_q[3] = 0;
+}
 
-void Quat::calculateQuaternion(IMU gyro, Timer time)
+void Quat::calculateQuaternion(IMU& gyro, Timer& time)
 {
     //Get the current angular rate
     wS[0] = 0;
     wS[1] = gyro.bodyGyroY_Rad;
     wS[2] = gyro.bodyGyroX_Rad;
     wS[3] = gyro.bodyGyroZ_Rad;
+
     //Now we have to normalize the previous orientation to be used
     //First we have to find the norm of the last one
     q_norm = (sqrt(pre_q[0] * pre_q[0] + pre_q[1] * pre_q[1] + pre_q[2] * pre_q[2] + pre_q[3] * pre_q[3]));

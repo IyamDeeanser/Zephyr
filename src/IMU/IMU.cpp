@@ -36,7 +36,7 @@ void IMU::update() {
 }
 
 void IMU::getGyroBias() {
-    for (int i = 0; i < 500; i++){
+    for (int i = 0; i < 1000; i++){
         sensors_event_t accel, gyro, temp;
         lsm.getEvent(&accel, &gyro, &temp);
 
@@ -47,7 +47,7 @@ void IMU::getGyroBias() {
         delay(6); // Delay to make sure imu does not give repeats
     }
 
-    gyroXBias = gyroXBias / 500;
-    gyroYBias = gyroYBias / 500;
-    gyroZBias = gyroZBias / 500;
+    gyroXBias = gyroXBias / 1000;
+    gyroYBias = gyroYBias / 1000;
+    gyroZBias = gyroZBias / 1000;
 }
