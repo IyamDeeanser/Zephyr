@@ -29,7 +29,7 @@ void Quat::calculateQuaternion(IMU gyro, Timer time)
     pitch = (-asin(2 * pre_q[1] * pre_q[3] + 2 * pre_q[0] * pre_q[2]));
     roll = (atan2(2 * pre_q[2] * pre_q[3] - 2 * pre_q[0] * pre_q[1], 2 * pre_q[0] * pre_q[0] + 2 * pre_q[3] * pre_q[3] - 1));
     //convert from radians to degrees
-    yaw = yaw * (180 / M_PI);
-    pitch = pitch * (180 / M_PI);
-    roll = roll * (180 / M_PI);
+    yaw = yaw * (180 / pi);
+    pitch = pitch * (180 / pi);
+    roll = roll * (180 / pi);
 }

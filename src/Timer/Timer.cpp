@@ -2,33 +2,30 @@
 #include "Arduino.h"
 
 void Timer::update(){
-    previousTime = currentTimeMicrons;
-    //currentTime += loopTime;
-
-    //none of this is needed when you can just add looptime in a hardware timer
-    currentTimeMicrons = micros();
-    currentTimeSeconds = currentTimeMicrons / 1000.0;
-    timeSinceLaunch = currentTimeMicrons - launchTime;
-    deltaTimeMicro = currentTimeMicrons - previousTime;
-    deltaTimeSec = deltaTimeMicro / 1000.0;
+    previousTimeMicro = currentTimeMicro;
+    previousTimeSec = previousTimeMicro / 1000000.0;
+    currentTimeMicro = micros();
+    currentTimeSec = currentTimeMicro / 1000000.0;
+    deltaTimeMicro = currentTimeMicro - previousTimeMicro;
+    deltaTimeSec = deltaTimeMicro / 1000000.0;
 }
 
 void Timer::logLaunch()
 {
-    launchTime = currentTimeMicrons;
+    launchTime = currentTimeSec;
 }
 
 void Timer::logTransmit()
 {
-    lastTlmTransmitTime = currentTimeMicrons;
+    lastTlmTransmitTime = currentTimeSec;
 }
 
 void Timer::logBurnout()
 {
-    burnoutTime = currentTimeMicrons;
+    burnoutTime = currentTimeSec;
 }
 
 void Timer::logApogee()
 {
-    apogeeDetectStartTime = currentTimeMicrons;
+    apogeeDetectStartTime = currentTimeSec;
 }

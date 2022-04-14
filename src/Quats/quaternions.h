@@ -7,7 +7,7 @@
 #include "../IMU/IMU.h"
 #include "../Timer/Timer.h"
 
-const float M_PI = 3.1415926535;
+const float pi = 3.1415926535;
 
 class Quat
 {
@@ -21,9 +21,6 @@ private:
     
 public:
     float yaw, pitch, roll;
-    
-    Quat();
-
     void calculateQuaternion(IMU gyro, Timer time);
 };
 
