@@ -2,7 +2,6 @@
 #define ACCEL_H
 
 #include "SparkFun_Qwiic_KX13X.h"
-#include <Wire.h>
 #include "../Vec3/Vec3.h"
 
 class Accelerometer {
