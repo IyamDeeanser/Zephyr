@@ -1,13 +1,13 @@
 #include "Accel.h"
 
 bool Accelerometer::begin(){ 
-    if( !kxAccel.begin()){
-        return false;
-    }
-    if( !kxAccel.initialize(DEFAULT_SETTINGS)){ // ! is this default settings?
-        return false;
-    }
+    Wire.begin();
+    
+    if(!kxAccel.begin(0x1E)) return false;
+    if(!kxAccel.initialize(DEFAULT_SETTINGS)) return false;
+
     kxAccel.setRange(KX134_RANGE64G);
+
     return true;
 }
 

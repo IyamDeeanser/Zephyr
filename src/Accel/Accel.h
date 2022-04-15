@@ -1,6 +1,7 @@
 #ifndef ACCEL_H
 #define ACCEL_H
 
+#include <Wire.h>
 #include "SparkFun_Qwiic_KX13X.h"
 #include "../Vec3/Vec3.h"
 
