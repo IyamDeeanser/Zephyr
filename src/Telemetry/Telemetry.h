@@ -36,7 +36,7 @@ class Telemetry {
             float latitude,
             float longitude
         );
-
+        void begin();
         void test();
         void sendStrln(const String & s);
         
