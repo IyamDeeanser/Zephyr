@@ -37,9 +37,15 @@ void Telemetry::test() {
     Serial1.println("<TEST TRANSMIT BEEP BEEP BOOP BOOP>");
 }
 
+
 void Telemetry::sendStrln(const String & s) {
     Serial1.println(s);
 }
+
+void Telemetry::begin() {
+    Serial1.begin(115200);
+}
+
 
 // Theres a 'Seria.readString() function that does this better LOL
 String Telemetry::read() {
