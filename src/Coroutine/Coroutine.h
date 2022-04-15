@@ -6,17 +6,19 @@
 class Coroutine {
 private:
     void (*target)();
-    float interval = 1.0f;
+    float interval;
     unsigned long lastCall;
 
 public:
+
     void setInterval(float target);
     void setFrequency(float target);
     void setTarget(void (*foo)());
     void callTarget();
-    void initialize(float frequency = 1.0f, void (*foo)() = nullptr);
+
+    void begin(void (*foo)() = nullptr, float frequency = 1);
+    
     void update();
 };
-
 
 #endif

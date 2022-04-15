@@ -13,18 +13,16 @@ void Coroutine::setTarget(void (*foo)()) {
 }
 
 void Coroutine::callTarget() {
-    if(target != nullptr) (*target)();
+    (*target)();
 }
 
-void Coroutine::initialize(float frequency = 1.0f, void (*foo)() = nullptr) {
+void Coroutine::begin(void (*foo)(), float frequency) {
     if(foo != nullptr) target = foo;
-    lastCall = millis();
     setFrequency(frequency);
-    callTarget();
 }
 
 void Coroutine::update() {
-    if(millis() > lastCall + interval * 1000) {
+    if(millis() >= lastCall + interval * 1000) {
         lastCall = millis();
         callTarget();
     }
