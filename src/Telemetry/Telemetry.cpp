@@ -1,5 +1,9 @@
 #include "Telemetry.h"
 
+void Telemetry::begin() {
+    Serial1.begin(115200);
+}
+
 void Telemetry::transmit(float oriX, float oriY, float oriZ, float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ, float altitude, float rwValue, float velocityX, float velocityY, float velocityZ, float positionX, float positionY, float positionZ, float batteryVoltage, float systemState, float cameraState, float reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude){
     Serial1.print("ROTATLM"); // prefix
     Serial1.print(oriX, 3);           Serial1.print(",");
@@ -41,11 +45,6 @@ void Telemetry::test() {
 void Telemetry::sendStrln(const String & s) {
     Serial1.println(s);
 }
-
-void Telemetry::begin() {
-    Serial1.begin(115200);
-}
-
 
 // Theres a 'Seria.readString() function that does this better LOL
 String Telemetry::read() {

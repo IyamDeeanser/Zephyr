@@ -19,7 +19,7 @@ Camera Cam;
 void setup() {
   // initialize
   Serial1.begin(115200);
-  Serial1.println("BEEP BEEP BOOP BOOP! WAKING UP!" + String(2.34));
+  Serial1.println("BEEP BEEP BOOP BOOP! WAKING UP!");
   Cam.initialize(); // initializes camera
 }
 
@@ -74,12 +74,4 @@ void loop()
 
       break;
   }
-}   
-
-void states()
-{
-  if (/*acceleration check*/)
-  {
-    State = LAUNCH_READY;
-  }
-}
+} 
