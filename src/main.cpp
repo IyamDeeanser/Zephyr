@@ -10,17 +10,17 @@
 #include "Camera/Camera.h"
 
 States State;
-Telemetry Tele;
+Telemetry TLM;
 Timer Time;
 Barometer Baro;
-SD_Card SD;
+SD_Card SD; // ! bad name
 Camera Cam;
 
 void setup() {
   // initialize
-  Serial1.begin(115200);
-  Serial1.println("BEEP BEEP BOOP BOOP! WAKING UP!");
+  TLM.begin();
   Cam.initialize(); // initializes camera
+  Serial1.println("ROTA SAT Initialized!");
 }
 
 void loop() 
@@ -74,4 +74,5 @@ void loop()
 
       break;
   }
-} 
+}
+

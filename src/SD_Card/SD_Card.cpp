@@ -1,110 +1,26 @@
 #include "SD_Card.h"
 
-//creates flight file
-SD_Card::SD_Card()
-{
-    if (!SD.begin(/*chipselect*/)) {
-        Serial1.println("");
-    //buzzer or some other signal
-    }
+SD_Card::SD_Card() {
 
-    dataInitialize();
-    settingsInitialize();
 }
 
-void SD_Card::Log(const String & s, Timer time)
-{
-    logcheck(time);
-
-    if (dataFile && datalog) {
-        dataFile = SD.open(datafilename, FILE_WRITE);
-        dataFile.print(s);
-        dataFile.close(); // close the file
-    }
+bool SD_Card::begin(int chipSelect){
+    return SD.begin(chipSelect);
 }
 
-void SD_Card::Logln(const String & s, Timer time)
-{
-    logcheck(time);
+String SD_Card::createNewDir() {
+    int num = 1;
+    char name[] = "Launch";
+    char buffer[20];
 
-    if (dataFile && datalog) {
-        dataFile = SD.open(datafilename, FILE_WRITE);
-        dataFile.print(s + '\n');
-        dataFile.close(); // close the file
-    }
-}
-
-void SD_Card::SetRate(const float & n)
-{
-    dataSpacer = n;
-}
-
-// @ needs to be able to access totaltime
-void SD_Card::logcheck(Timer time)
-{
-    if(logDelay)
-    {
-        if((time.currentTimeSeconds-counter) > dataSpacer)
-        {
-            datalog = true;
-            counter = time.currentTimeSeconds;
-        }
-        else
-        {
-            datalog = false;
-        }
-    }
-}
-
-void SD_Card::dataInitialize()
-{
-    filenum = 1;
-    while(true) 
-    {
-        sprintf(datafilename, "Flight_%d.csv", filenum);
-        if(!SD.exists(datafilename)) {
-            break;
-        }
-        else {
-            filenum++;
-        }
+    sprintf(buffer,"%s_%d", name, num);
+    while(SD.exists(buffer)) {
+        sprintf(buffer,"%s_%d", name, ++num);
     }
 
-    dataFile = SD.open(datafilename, FILE_WRITE);
+    SD.mkdir(buffer);
+    
+    Serial.println(buffer);
 
-    // if the file opened okay, write the csv headings to it:
-    if (dataFile) {
-        dataFile.print("/*datatype here*/");
-        dataFile.println(/*last dataset*/);
-
-    // close the file:
-        dataFile.close();
-    }
-    else {
-        // if the file didn't open, send an error
-    }
-}
-
-void SD_Card::settingsInitialize()
-{
-    if(settingsWrite)
-    {
-        //filewriting names
-        sprintf(settingsfilename, "Settin_%d.csv", filenum);
-
-        settingsFile = SD.open(settingsfilename, FILE_WRITE);
-        
-        // if the file opened okay, write to it:
-        if (settingsFile) {
-            settingsFile.print("Working"); settingsFile.println(/*data*/);
-
-            // close the file:
-            settingsFile.close();
-        }
-        
-        else {
-        // if the file didn't open, print an error:
-        }
-        settingsWrite = false; 
-    }
+    return '/' + String(buffer) + '/';
 }
