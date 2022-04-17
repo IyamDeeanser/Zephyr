@@ -32,7 +32,7 @@ Barometer Baro;
 IMU Gyro;
 Coroutine SDLogger;
 Coroutine TLMSender;
-// @ MAYBE start GPS connection here (battery reasons)
+// @json MAYBE start GPS connection here (battery reasons)
 // Prototype Functions
 void logData();
 void sendData();
@@ -83,9 +83,8 @@ void loop()
   switch(State) {
     case GROUND_IDLE:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(GROUND_IDLE_SETUP) {
+        GROUND_IDLE_SETUP = false;
       }
       // loop
       // todo manual Trigger to go into launch ready
@@ -94,10 +93,10 @@ void loop()
 
     case LAUNCH_READY:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(LAUNCH_READY_SETUP) {
+        LAUNCH_READY_SETUP = false;
         SDLogger.resume(); // starts logging data 
+        TLMSender.setFrequency(RATE_HIGH);
         // todo MAYBE abort mission if communication with GCS isnt established by this point (Tim's idea lol)
         // todo MAYBE start GPS connection here (battery reasons)
       }
@@ -107,9 +106,8 @@ void loop()
 
     case POWERED_ASCENT:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(POWERED_ASCENT_SETUP) {
+        POWERED_ASCENT_SETUP = false;
       }
       // loop
 
@@ -117,9 +115,8 @@ void loop()
 
     case UNPOWERED_ASCENT:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(UNPOWERED_ASCENT_SETUP) {
+        UNPOWERED_ASCENT_SETUP = false;
       }
       // loop
 
@@ -127,19 +124,17 @@ void loop()
     
     case SEPARATION:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(SEPARATION_SETUP) {
+        SEPARATION_SETUP = false;
       }
       // loop
 
       break;
 
     case APOGEE:
-      // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      // setup 
+      if(APOGEE_SETUP) {
+        APOGEE_SETUP = false;
       }
       // loop
 
@@ -147,9 +142,8 @@ void loop()
 
     case PARACHUTE_DESCENT:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(PARACHUTE_DESCENT_SETUP) {
+        PARACHUTE_DESCENT_SETUP = false;
       }
       // loop
 
@@ -157,9 +151,8 @@ void loop()
 
     case ROLL_CONTROL:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(ROLL_CONTROL_SETUP) {
+        ROLL_CONTROL_SETUP = false;
       }
       // loop
 
@@ -167,9 +160,8 @@ void loop()
 
     case MANUAL_ROLL_CONTROL:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(MANUAL_ROLL_CONTROL_SETUP) {
+        MANUAL_ROLL_CONTROL_SETUP = false;
       }
       // loop
 
@@ -177,19 +169,17 @@ void loop()
 
     case LANDING:
       // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      if(LANDING_SETUP) {
+        LANDING_SETUP = false;
       }
       // loop
 
       break;
 
     case MISSION_COMPLETE:
-      // setup
-      static bool setup = true;
-      if(setup) {
-        setup = false;
+      // setup 
+      if(MISSION_COMPLETE_SETUP) {
+        MISSION_COMPLETE_SETUP = false;
       }
       // loop
 

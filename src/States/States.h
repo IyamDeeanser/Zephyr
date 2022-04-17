@@ -16,4 +16,16 @@ enum States {
   ABORT
 };
 
+bool GROUND_IDLE_SETUP = true;
+bool LAUNCH_READY_SETUP = true;
+bool POWERED_ASCENT_SETUP = true;
+bool UNPOWERED_ASCENT_SETUP = true;
+bool SEPARATION_SETUP = true;
+bool APOGEE_SETUP = true;
+bool PARACHUTE_DESCENT_SETUP = true;
+bool ROLL_CONTROL_SETUP = true;
+bool MANUAL_ROLL_CONTROL_SETUP = true;
+bool LANDING_SETUP = true;
+bool MISSION_COMPLETE_SETUP = true;
+
 #endif
