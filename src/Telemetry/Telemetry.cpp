@@ -42,7 +42,7 @@ void Telemetry::test() {
 }
 
 
-void Telemetry::sendStrln(const String & s) {
+void Telemetry::printlnStr(const String & s) {
     Serial1.println(s);
 }
 

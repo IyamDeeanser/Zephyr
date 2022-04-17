@@ -1,26 +1,63 @@
-#include <Arduino.h>
-#include "States/States.h"
-#include "Telemetry/Telemetry.h"
-#include "Vec3/Vec3.h"
-#include "Settings/Settings.h"
-#include "Timer/Timer.h"
-#include "Baro/Baro.h"
-#include "SD_Card/SD_Card.h"
-#include "GPS/GPS.h"
-#include "Camera/Camera.h"
+// ! We should write a bit of info abt this project & abt team zephyr
 
+// Libraries
+#include <Arduino.h>
+#include "Settings/Settings.h" // ! We don't need this file
+#include "States/States.h"
+#include "Timer/Timer.h"
+#include "Telemetry/Telemetry.h"
+#include "SD_Card/SD_Card.h"
+#include "Camera/Camera.h"
+#include "Accel/Accel.h"
+#include "Barometer/Barometer.h"
+#include "IMU/IMU.h"
+
+// ! GPS NOT INCLUDED
+// ! Quaterions not included
+// ! RCW not included
+// ! PID not included
+
+// Global Objects
 States State;
-Telemetry TLM;
 Timer Time;
-Barometer Baro;
-SD_Card SD; // ! bad name
+Telemetry TLM;
+SD_File logFile;
+SD_File settingsFile;
 Camera Cam;
+Accelerometer Accel;
+Barometer Baro;
+IMU Gyro;
+
 
 void setup() {
-  // initialize
+  // Telemetry
   TLM.begin();
-  Cam.initialize(); // initializes camera
-  Serial1.println("ROTA SAT Initialized!");
+  
+  // SD card
+  if(!SD_Card::begin(15))
+    TLM.printlnStr("SD CARD FAILED TO INITIALIZE!");
+
+  // Files
+  String flightFolderPath = SD_Card::createNewDir();
+  logFile.begin("file.txt", flightFolderPath);
+  settingsFile.begin("settings.txt", flightFolderPath);
+
+  // camera
+  Cam.initialize();
+  
+  // Accelerometer
+  if(!Accel.begin())
+    TLM.printlnStr("HIGH-G ACCEROMETER FAILED TO INITIALIZE!");
+
+  // Barometer 
+  if(!Baro.begin())
+    TLM.printlnStr("BAROMETER FAILED TO INITIALIZE!");
+
+  // Inertial Measurement Unit
+  if(!Gyro.begin())
+    TLM.printlnStr("IMU FAILED TO INITIALIZE!");
+
+  TLM.printlnStr("INITALIZATION COMPLETE");
 }
 
 void loop() 

@@ -38,7 +38,7 @@ class Telemetry {
         );
         void begin();
         void test();
-        void sendStrln(const String & s);
+        void printlnStr(const String & s);
         
         // Pre-conditions: Input must be <= 25 characters & be enclosed with <>
         String read();
