@@ -37,7 +37,6 @@ class Telemetry {
             float longitude
         );
         void begin();
-        void test();
         void printlnStr(const String & s);
         
         // Pre-conditions: Input must be <= 25 characters & be enclosed with <>
