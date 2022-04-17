@@ -2,21 +2,20 @@
 #define IMU_H
 
 #include <Arduino.h>
+#include "../Vec3/Vec3.h"
 
 class IMU {
   public:
     //Raw gyro readings   Tims note: this is not raw. theres debiasing processing
-    float bodyGyroX_Rad, bodyGyroY_Rad, bodyGyroZ_Rad;
-    float bodyGyroX_Deg, bodyGyroY_Deg, bodyGyroZ_Deg;
+    vec3 bodyGyroRad;
+    vec3 bodyGyroDeg;
 
     //Temperature frm IMU
     float temperature;
 
     //Raw acc readings in m/s^2
-    float bodyAccelX, bodyAccelY, bodyAccelZ;
-
-    float gyroXBias, gyroYBias, gyroZBias;
-
+    vec3 bodyAccel;
+    vec3 gyroBias;
     bool begin();
 
     void update();

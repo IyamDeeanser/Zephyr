@@ -22,17 +22,17 @@ void IMU::update() {
 
     temperature = temp.temperature;
 
-    bodyGyroX_Rad = gyro.gyro.x - gyroXBias;
-    bodyGyroY_Rad = gyro.gyro.y - gyroYBias;
-    bodyGyroZ_Rad = gyro.gyro.z - gyroZBias;
+    bodyGyroRad.x = gyro.gyro.x - gyroBias.x;
+    bodyGyroRad.y = gyro.gyro.y - gyroBias.y;
+    bodyGyroRad.z = gyro.gyro.z - gyroBias.z;
 
-    bodyGyroX_Deg = bodyGyroX_Rad * (180/PI);
-    bodyGyroY_Deg = bodyGyroY_Rad * (180/PI);
-    bodyGyroZ_Deg = bodyGyroZ_Rad * (180/PI);
+    bodyGyroDeg.x = bodyGyroRad.x * (180/PI);
+    bodyGyroDeg.y = bodyGyroRad.y * (180/PI);
+    bodyGyroDeg.z = bodyGyroRad.z * (180/PI);
 
-    bodyAccelX = accel.acceleration.x;
-    bodyAccelY = accel.acceleration.y;
-    bodyAccelZ = accel.acceleration.z;
+    bodyAccel.x = accel.acceleration.x;
+    bodyAccel.y = accel.acceleration.y;
+    bodyAccel.z = accel.acceleration.z;
 }
 
 void IMU::getGyroBias() {
@@ -40,14 +40,14 @@ void IMU::getGyroBias() {
         sensors_event_t accel, gyro, temp;
         lsm.getEvent(&accel, &gyro, &temp);
 
-        gyroXBias = gyroXBias + gyro.gyro.x;
-        gyroYBias = gyroYBias + gyro.gyro.y;
-        gyroZBias = gyroZBias + gyro.gyro.z;
+        gyroBias.x = gyroBias.x + gyro.gyro.x;
+        gyroBias.y = gyroBias.y + gyro.gyro.y;
+        gyroBias.z = gyroBias.z + gyro.gyro.z;
 
         delay(6); // Delay to make sure imu does not give repeats
     }
 
-    gyroXBias = gyroXBias / 1000;
-    gyroYBias = gyroYBias / 1000;
-    gyroZBias = gyroZBias / 1000;
+    gyroBias.x = gyroBias.x / 1000;
+    gyroBias.y = gyroBias.y / 1000;
+    gyroBias.z = gyroBias.z / 1000;
 }

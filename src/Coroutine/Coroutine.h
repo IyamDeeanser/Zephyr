@@ -8,6 +8,7 @@ private:
     void (*target)();
     float interval;
     unsigned long lastCall;
+    bool running = true;
 
 public:
 
@@ -15,7 +16,8 @@ public:
     void setFrequency(float target);
     void setTarget(void (*foo)());
     void callTarget();
-
+    void pause();
+    void resume();
     void begin(void (*foo)() = nullptr, float frequency = 1);
     
     void update();

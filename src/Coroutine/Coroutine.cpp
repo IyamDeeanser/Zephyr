@@ -22,8 +22,16 @@ void Coroutine::begin(void (*foo)(), float frequency) {
 }
 
 void Coroutine::update() {
-    if(millis() >= lastCall + interval * 1000) {
+    if(millis() >= lastCall + interval * 1000 && running) {
         lastCall = millis();
         callTarget();
     }
+}
+
+void Coroutine::pause() {
+    running = false;
+}
+
+void Coroutine::resume() {
+    running = true;
 }

@@ -13,6 +13,7 @@ private:
   float Kp = 1, Ki = 0, Kd = 0;
   float P, I, D;
 public:
+  PID();
   float Output = 0;
   void calculate(Timer time, IMU gyro);
   void setSetpoint(float newPoint);

@@ -7,7 +7,7 @@ void PID::calculate(Timer time, IMU gyro)
 {
     //PID
     lastError = error;
-    error = gyro.bodyGyroX_Deg - setpoint;
+    error = gyro.bodyGyroDeg.x - setpoint;
     totalError = totalError + error * time.deltaTimeSec;
     P = Kp * error;   //Proportional part of PID
     I = Ki * totalError; //Integral part of PID

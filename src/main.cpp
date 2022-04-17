@@ -17,6 +17,7 @@
 // ! Quaterions not included
 // ! RCW not included
 // ! PID not included
+// ! Accel Orentation
 
 // Global Objects
 States State;
@@ -67,6 +68,7 @@ void setup() {
   // Coroutines
   SDLogger.begin(logData);
   TLMSender.begin(sendData);
+  SDLogger.pause(); // SD Card starts logging at Launch Ready
 
   TLM.printlnStr("INITALIZATION COMPLETE");
 }

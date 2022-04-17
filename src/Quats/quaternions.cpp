@@ -13,9 +13,9 @@ void Quat::calculateQuaternion(IMU& gyro, Timer& time)
 {
     //Get the current angular rate
     wS[0] = 0;
-    wS[1] = gyro.bodyGyroY_Rad;
-    wS[2] = gyro.bodyGyroX_Rad;
-    wS[3] = gyro.bodyGyroZ_Rad;
+    wS[1] = gyro.bodyGyroRad.y;
+    wS[2] = gyro.bodyGyroRad.x;
+    wS[3] = gyro.bodyGyroRad.z;
 
     //Now we have to normalize the previous orientation to be used
     //First we have to find the norm of the last one
