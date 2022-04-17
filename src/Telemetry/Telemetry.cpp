@@ -37,11 +37,6 @@ void Telemetry::transmit(float oriX, float oriY, float oriZ, float accelX, float
     Serial1.print(longitude, 3);
 }
 
-void Telemetry::test() {
-    Serial1.println("<TEST TRANSMIT BEEP BEEP BOOP BOOP>");
-}
-
-
 void Telemetry::printlnStr(const String & s) {
     Serial1.println(s);
 }
