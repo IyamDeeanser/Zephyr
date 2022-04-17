@@ -11,7 +11,8 @@
 #include "Accel/Accel.h"
 #include "Barometer/Barometer.h"
 #include "IMU/IMU.h"
-
+#include "Coroutine/Coroutine.h"
+#include "Voltage/Voltage.h"
 // ! GPS NOT INCLUDED
 // ! Quaterions not included
 // ! RCW not included
@@ -27,8 +28,14 @@ Camera Cam;
 Accelerometer Accel;
 Barometer Baro;
 IMU Gyro;
+Coroutine SDLogger;
+Coroutine TLMSender;
 
+// Prototype Functions
+void logData();
+void sendData();
 
+// setup loop
 void setup() {
   // Telemetry
   TLM.begin();
@@ -57,11 +64,19 @@ void setup() {
   if(!Gyro.begin())
     TLM.printlnStr("IMU FAILED TO INITIALIZE!");
 
+  // Coroutines
+  SDLogger.begin(logData);
+  TLMSender.begin(sendData);
+
   TLM.printlnStr("INITALIZATION COMPLETE");
 }
 
 void loop() 
 {
+  Time.update();
+  SDLogger.update();
+  TLMSender.update();
+  
   switch(State) {
     case GROUND_IDLE:
 
@@ -113,3 +128,10 @@ void loop()
   }
 }
 
+void logData() {
+
+}
+
+void sendData() {
+
+}
