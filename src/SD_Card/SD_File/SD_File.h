@@ -25,8 +25,8 @@ public:
         vec3 velocity,
         vec3 position,
         float batteryVoltage,
-        float systemState,
-        float cameraState,
+        const String & systemState,
+        const String & cameraState,
         float reactionWheelState,
         float onTimeSec,
         float flightTimeSec,
@@ -36,7 +36,7 @@ public:
         float GPSSats,
         float latitude,
         float longitude
-    );
+        );
 };
 
 

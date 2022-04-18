@@ -32,7 +32,7 @@ Barometer Baro;
 IMU Gyro;
 Coroutine SDLogger;
 Coroutine TLMSender;
-// @json MAYBE start GPS connection here (battery reasons)
+// @ maybe DONT start GPS connection here (battery reasons)
 // Prototype Functions
 void logData();
 void sendData();
@@ -82,106 +82,54 @@ void loop()
   // todo SELECT STATE GIVEN CONDITION (in case device restarts mid flight)
   switch(State) {
     case GROUND_IDLE:
-      // setup
-      if(GROUND_IDLE_SETUP) { // ! replace w/ state transition
-        GROUND_IDLE_SETUP = false;
+      if(TLM.read() == GOTO_LAUNCH_READY) {
+        SDLogger.resume(); // starts logging data 
+        TLMSender.setFrequency(RATE_HIGH);
+        State = LAUNCH_READY;
+        // todo MAYBE start GPS connection here (battery reasons)
       }
-      // loop
-      // todo manual Trigger to go into launch ready
-      
+      // @ Maybe auto Switch to ascent IF mag. of velocity > 10 m/s
       break;
 
     case LAUNCH_READY:
-      // setup
-      if(LAUNCH_READY_SETUP) {
-        LAUNCH_READY_SETUP = false;
-        SDLogger.resume(); // starts logging data 
-        TLMSender.setFrequency(RATE_HIGH);
-        // todo MAYBE abort mission if communication with GCS isnt established by this point (Tim's idea lol)
-        // todo MAYBE start GPS connection here (battery reasons)
-      }
-      // loop
+        
+        // todo MAYBE abort mission if communication with GCS isnt established by this point (Tim's idealol)
 
       break;
 
     case POWERED_ASCENT:
-      // setup
-      if(POWERED_ASCENT_SETUP) {
-        POWERED_ASCENT_SETUP = false;
-      }
-      // loop
 
       break;
 
     case UNPOWERED_ASCENT:
-      // setup
-      if(UNPOWERED_ASCENT_SETUP) {
-        UNPOWERED_ASCENT_SETUP = false;
-      }
-      // loop
 
       break;
     
     case SEPARATION:
-      // setup
-      if(SEPARATION_SETUP) {
-        SEPARATION_SETUP = false;
-      }
-      // loop
 
       break;
 
     case APOGEE:
-      // setup 
-      if(APOGEE_SETUP) {
-        APOGEE_SETUP = false;
-      }
-      // loop
 
       break;
 
     case PARACHUTE_DESCENT:
-      // setup
-      if(PARACHUTE_DESCENT_SETUP) {
-        PARACHUTE_DESCENT_SETUP = false;
-      }
-      // loop
 
       break;
 
     case ROLL_CONTROL:
-      // setup
-      if(ROLL_CONTROL_SETUP) {
-        ROLL_CONTROL_SETUP = false;
-      }
-      // loop
 
       break;
 
     case MANUAL_ROLL_CONTROL:
-      // setup
-      if(MANUAL_ROLL_CONTROL_SETUP) {
-        MANUAL_ROLL_CONTROL_SETUP = false;
-      }
-      // loop
 
       break;
 
     case LANDING:
-      // setup
-      if(LANDING_SETUP) {
-        LANDING_SETUP = false;
-      }
-      // loop
 
       break;
 
     case MISSION_COMPLETE:
-      // setup 
-      if(MISSION_COMPLETE_SETUP) {
-        MISSION_COMPLETE_SETUP = false;
-      }
-      // loop
 
       break;
 
@@ -197,10 +145,53 @@ void loop()
   // todo Manual State-Switcher based on GCS commands
 }
 
-void logData() {
+// TEMP variable for varialbes I don't have
+#define NA 0
 
+void logData() {
+  logFile.logData(
+    vec3(),
+    Accel.data,
+    Gyro.bodyGyroDeg,
+    NA,
+    NA,
+    NA,
+    vec3(),
+    Voltage::getVoltage(),
+    states::stateToStr(State),
+    Cam.getState(),
+    NA,
+    Time.currentTimeSec, // ? Maybe use Micro for SD for more precision
+    Time.launchTime, // ? Micro too?
+    Baro.pressure,
+    Gyro.temperature,
+    Baro.temperature,
+    NA,
+    NA,
+    NA
+  );
 }
 
 void sendData() {
-
+  TLM.transmit(
+    vec3(),
+    Accel.data,
+    Gyro.bodyGyroDeg,
+    NA,
+    NA,
+    NA,
+    vec3(),
+    Voltage::getVoltage(),
+    states::stateToStr(State),
+    Cam.getState(),
+    NA,
+    Time.currentTimeSec,
+    Time.launchTime  / 1000000.0, // Converting Micro -> Seconds
+    Baro.pressure,
+    Gyro.temperature,
+    Baro.temperature,
+    NA,
+    NA,
+    NA
+  );
 }

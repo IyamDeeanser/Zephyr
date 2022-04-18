@@ -54,7 +54,7 @@ void SD_File::eject() {
     canWrite = false;
 }
 
-void SD_File::logData(vec3 ori, vec3 accel, vec3 gyro, float altitude, float rwValue, vec3 velocity, vec3 position, float batteryVoltage, float systemState, float cameraState, float reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude) {
+void SD_File::logData(vec3 ori, vec3 accel, vec3 gyro, float altitude, float rwValue, vec3 velocity, vec3 position, float batteryVoltage, const String & systemState, const String & cameraState, float reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude) {
     File file = SD.open(filePath, FILE_WRITE);
     file.print(ori.x, 3);                file.print(",");
     file.print(ori.y, 3);                file.print(",");
@@ -74,8 +74,8 @@ void SD_File::logData(vec3 ori, vec3 accel, vec3 gyro, float altitude, float rwV
     file.print(position.y, 3);           file.print(",");
     file.print(position.z, 3);           file.print(",");
     file.print(batteryVoltage, 3);       file.print(",");
-    file.print(systemState, 3);          file.print(",");
-    file.print(cameraState, 3);          file.print(",");
+    file.print(systemState);             file.print(",");
+    file.print(cameraState);             file.print(",");
     file.print(reactionWheelState, 3);   file.print(",");
     file.print(onTimeSec, 3);            file.print(",");
     file.print(flightTimeSec, 3);        file.print(",");
