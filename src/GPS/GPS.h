@@ -27,7 +27,7 @@ public:
     int numSatellites;
 
     //Constructor and update function declaration
-    GPS_Stats();
+    bool begin();
     void update();
 };
 
