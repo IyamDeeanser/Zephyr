@@ -5,8 +5,8 @@
 
 class ReactionWheel {
 private:
-    float outPin1;
-    float outPin2;
+    int outPin1 = 5;
+    int outPin2 = 11;
 public:
     float wheelOutput;
 
