@@ -1,6 +1,3 @@
-//GPS Header File 
-//Written by Vhea He
-
 #ifndef GPS_H
 #define GPS_H
 
@@ -27,7 +24,8 @@ public:
     int numSatellites;
 
     //Constructor and update function declaration
-    bool begin();
+    GPS_Stats();
+    void begin();
     void update();
 };
 
