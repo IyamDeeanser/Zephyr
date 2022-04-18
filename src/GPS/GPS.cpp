@@ -1,4 +1,4 @@
-#include <GPS.h>
+#include "GPS.h"
 
 //When the main program makes a GPS_Stats object (this will need to be done in order to to use the functions), 
     //the object is created with all values initialized to 0
