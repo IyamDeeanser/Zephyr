@@ -1,9 +1,6 @@
-//GPS Implementation File
-//Written by: Vhea He
+#include <GPS.h>
 
-#include "GPS.h"
-
-bool GPS_Stats::begin(){
+GPS_Stats::GPS_Stats(){
 
     //Initializes everything to 0
         //If GPS not responding then all variables will be equal to zero, and it will be obvious there is a problem
@@ -13,8 +10,10 @@ bool GPS_Stats::begin(){
     speed = 0.0;
     angle= 0.0;
     numSatellites = 0;
+}
 
-    if(!ZephyrGPS.begin(0x10)) return false; // ! MUST CHANGE
+void GPS_Stats::begin(){
+    ZephyrGPS.begin(0x10); //Change address if needed depending on where GPS is
 
     //turns on RMC (recommended minimum) and GGA (fix data) including altitude
     ZephyrGPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -24,10 +23,10 @@ bool GPS_Stats::begin(){
     // Request updates on antenna status 
     ZephyrGPS.sendCommand(PGCMD_ANTENNA);
 
+    delay(1000);
+    
     // Ask for firmware version
     ZephyrGPS.println(PMTK_Q_RELEASE);
-
-    return true;
 }
 
 void GPS_Stats::update(){
