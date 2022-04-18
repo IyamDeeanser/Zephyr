@@ -13,6 +13,7 @@ public:
     vec3 data; // access data
     bool begin(); // run ONCE in setup, returns false if failed to initalize
     void update(); // run periodically in loop to updata 'data'
+    float getAccelMag() const;
 };
 
 #endif

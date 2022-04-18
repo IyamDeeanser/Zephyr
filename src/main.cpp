@@ -87,14 +87,20 @@ void loop()
         TLMSender.setFrequency(RATE_HIGH);
         State = LAUNCH_READY;
         // todo MAYBE start GPS connection here (battery reasons)
+        // ? Why is Camera Manually enabled??
+        // todo MAYBE abort mission if communication with GCS isnt established by this point (Tim's idealol)
+        // ? What's the point of signal tests? (also it should be done by ground station)
+        // Gyro.getGyroBias();  // ! I Don't know if I'm doing this properly
       }
       // @ Maybe auto Switch to ascent IF mag. of velocity > 10 m/s
       break;
 
-    case LAUNCH_READY:
-        
-        // todo MAYBE abort mission if communication with GCS isnt established by this point (Tim's idealol)
-
+    case LAUNCH_READY: 
+      if(Accel.getAccelMag() > 13 || TLM.read() == GOTO_POWERED_ASCENT) {
+        State = POWERED_ASCENT;
+        SDLogger.setFrequency(RATE_HIGH); // ! SINCE THE Acceleration must be > 13, the initial accleration won't be logged! (when the acc < 13)
+        TLMSender.setFrequency(RATE_HIGH);
+      }
       break;
 
     case POWERED_ASCENT:
