@@ -1,5 +1,7 @@
 #include <GPS.h>
 
+//When the main program makes a GPS_Stats object (this will need to be done in order to to use the functions), 
+    //the object is created with all values initialized to 0
 GPS_Stats::GPS_Stats(){
 
     //Initializes everything to 0
@@ -12,8 +14,9 @@ GPS_Stats::GPS_Stats(){
     numSatellites = 0;
 }
 
+//Sends commands and does standard GPS setup
 void GPS_Stats::begin(){
-    ZephyrGPS.begin(0x10); //Change address if needed depending on where GPS is
+    ZephyrGPS.begin(0x10); //Change address if needed
 
     //turns on RMC (recommended minimum) and GGA (fix data) including altitude
     ZephyrGPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -21,7 +24,7 @@ void GPS_Stats::begin(){
     ZephyrGPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
 
     // Request updates on antenna status 
-    ZephyrGPS.sendCommand(PGCMD_ANTENNA);
+    ZephyrGPS.sendCommand(PGCMD_ANTENNA); 
 
     delay(1000);
     
@@ -29,6 +32,7 @@ void GPS_Stats::begin(){
     ZephyrGPS.println(PMTK_Q_RELEASE);
 }
 
+//Updates all public variables in the GPS_Stats object with new information and makes sure GPS is receieving proper updates
 void GPS_Stats::update(){
 
     //Reads NMEA character by character 
