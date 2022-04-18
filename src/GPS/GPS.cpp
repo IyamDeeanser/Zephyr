@@ -1,4 +1,4 @@
-#include <GPS.h>
+#include "GPS.h"
 
 //When the main program makes a GPS_Stats object (this will need to be done in order to to use the functions), 
     //the object is created with all values initialized to 0
@@ -26,7 +26,7 @@ void GPS_Stats::begin(){
     // Request updates on antenna status 
     ZephyrGPS.sendCommand(PGCMD_ANTENNA); 
 
-    delay(1000);
+    delay(1000); // ! MAY BE A PROBLEM
     
     // Ask for firmware version
     ZephyrGPS.println(PMTK_Q_RELEASE);

@@ -72,6 +72,7 @@ void setup() {
   SDLogger.pause(); // SD Card starts logging at Launch Ready
 
   TLM.printlnStr("INITALIZATION COMPLETE");
+  // todo ADD BROWNOUT SAFEGUARD
 }
 
 void loop() 
@@ -96,9 +97,9 @@ void loop()
       break;
 
     case LAUNCH_READY: 
-      if(Accel.getAccelMag() > 13 || TLM.read() == GOTO_POWERED_ASCENT) {
+      if(abs(Accel.data.x) > 13 || TLM.read() == GOTO_POWERED_ASCENT) { // alternative, Accel.getAccelMag();
         State = POWERED_ASCENT;
-        SDLogger.setFrequency(RATE_HIGH); // ! SINCE THE Acceleration must be > 13, the initial accleration won't be logged! (when the acc < 13)
+        SDLogger.setFrequency(RATE_HIGH);
         TLMSender.setFrequency(RATE_HIGH);
       }
       break;
