@@ -17,14 +17,15 @@ bool Barometer::begin() {
 }
 
 void Barometer::update() {
-    bmp388.getMeasurements(temperature, pressure, altitudeBaroMSL);
+    bmp388.getMeasurements(temperature, pressure, rawAltitude);
 }
 
-
-void Barometer::getAltitude() {
-    altitudeBaroAGL = altitudeBaroMSL - altitudeBias;
+float Barometer::getAltitude() {
+    altitude = rawAltitude - bias;
+    return altitude;
 }
+
 
 void Barometer::setAltitudeBias(){
-    altitudeBias = altitudeBaroMSL;
+    bias = rawAltitude;
 }

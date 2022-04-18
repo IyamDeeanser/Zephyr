@@ -12,7 +12,7 @@ class IMU {
 
     //Temperature frm IMU
     float temperature;
-
+    bool biasComplete = false;
     //Raw acc readings in m/s^2
     vec3 bodyAccel;
     vec3 gyroBias;

@@ -6,14 +6,14 @@ void Camera::initialize() {
 
 void Camera::turnOn() {
     digitalWrite(CAMERA_PIN, HIGH);
-    state = "ON";
+    state = 1;
 }
 
 void Camera::turnOff() {
     digitalWrite(CAMERA_PIN, LOW);
-    state = "OFF";
+    state = 0;
 }
 
-String Camera::getState() const {
+bool Camera::getState() const {
     return state;
 }

@@ -80,6 +80,7 @@ void loop()
   Time.update();
   SDLogger.update();
   TLMSender.update();
+  // BARO NEEDS TO BE UPDATED! EVERY LOOP
   // todo SELECT STATE GIVEN CONDITION (in case device restarts mid flight)
   switch(State) {
     case GROUND_IDLE:
@@ -87,40 +88,57 @@ void loop()
         SDLogger.resume(); // starts logging data 
         TLMSender.setFrequency(RATE_HIGH);
         State = LAUNCH_READY;
+        Baro.setAltitudeBias();
         // todo MAYBE start GPS connection here (battery reasons)
         // ? Why is Camera Manually enabled??
         // todo MAYBE abort mission if communication with GCS isnt established by this point (Tim's idealol)
         // ? What's the point of signal tests? (also it should be done by ground station)
-        // Gyro.getGyroBias();  // ! I Don't know if I'm doing this properly
       }
       // @ Maybe auto Switch to ascent IF mag. of velocity > 10 m/s
       break;
 
     case LAUNCH_READY: 
+      Gyro.getGyroBias(); // ! IF COMPUTER REBOOTS IN THE AIR, GYRO BIAS WILL NOT BE SET PROPERLY
       if(abs(Accel.data.x) > 13 || TLM.read() == GOTO_POWERED_ASCENT) { // alternative, Accel.getAccelMag();
         State = POWERED_ASCENT;
         SDLogger.setFrequency(RATE_HIGH);
         TLMSender.setFrequency(RATE_HIGH);
+        if (Gyro.biasComplete) {
+          TLM.printlnStr("GYRO BIAS COMPLETE");
+        } else {
+          TLM.printlnStr("ERROR: GYRO BIAS INCOMPLETEL!");
+        }
+        // ! LOG BOTH ACCELS, BUT ONLY TRANSMIT ONE (why not do both tho?)
       }
       break;
 
     case POWERED_ASCENT:
-
+      if(Accel.getAccelMag() < 2) { // ? Is 2 the right term to use?
+        State = UNPOWERED_ASCENT;
+        // ! Switch to low G-Acc Readings
+        SDLogger.setFrequency(RATE_MEDIUM);
+      }
       break;
 
     case UNPOWERED_ASCENT:
-
+      // ? Check for < 16g??
+      // ? why check for x axis only?? 
+      if(Accel.getAccelMag() < 4) { // ! WHY IS IT 2 for POWERED & 4 for SEP? WHY ONLY GET X AXIS??
+        State = SEPARATION;
+        TLM.printlnStr("SEPERATION!");
+      }
       break;
     
     case SEPARATION:
-
+      // ?? nothing happens here
+      
       break;
 
     case APOGEE:
-
+      // ?? nothing happens here
       break;
 
-    case PARACHUTE_DESCENT:
+    case PARACHUTE_DESCENT: // !! Currently no way to get to this part of code
 
       break;
 
@@ -160,12 +178,12 @@ void logData() {
     vec3(),
     Accel.data,
     Gyro.bodyGyroDeg,
-    NA,
+    Baro.getAltitude(),
     NA,
     NA,
     vec3(),
     Voltage::getVoltage(),
-    states::stateToStr(State),
+    State,
     Cam.getState(),
     NA,
     Time.currentTimeSec, // ? Maybe use Micro for SD for more precision
@@ -184,13 +202,13 @@ void sendData() {
     vec3(),
     Accel.data,
     Gyro.bodyGyroDeg,
-    NA,
+    Baro.getAltitude(),
     NA,
     NA,
     vec3(),
     Voltage::getVoltage(),
-    states::stateToStr(State),
-    Cam.getState(),
+    State,
+    Cam.getState(), // ! Bool
     NA,
     Time.currentTimeSec,
     Time.launchTime  / 1000000.0, // Converting Micro -> Seconds
@@ -199,6 +217,7 @@ void sendData() {
     Baro.temperature,
     NA,
     NA,
-    NA
+    NA,
+    0
   );
 }

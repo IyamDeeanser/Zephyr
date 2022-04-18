@@ -35,17 +35,25 @@ void IMU::update() {
     bodyAccel.z = accel.acceleration.z;
 }
 
-void IMU::getGyroBias() {
-    for (int i = 0; i < 1000; i++){
+void IMU::getGyroBias() { // ! UNTESTED FUNCTION
+    const static unsigned long startTime = millis();
+    const int delayTime = 6; // in milliseconds
+    const int totalLoops = 1000;
+    int loopNum = 0;
+
+    if (biasComplete) return;
+
+    if (millis() > startTime + delayTime * loopNum && loopNum < totalLoops){
+        loopNum++;
         sensors_event_t accel, gyro, temp;
         lsm.getEvent(&accel, &gyro, &temp);
 
         gyroBias.x = gyroBias.x + gyro.gyro.x;
         gyroBias.y = gyroBias.y + gyro.gyro.y;
         gyroBias.z = gyroBias.z + gyro.gyro.z;
-
-        delay(6); // Delay to make sure imu does not give repeats
     }
+
+    if (loopNum > totalLoops) biasComplete = true;
 
     gyroBias.x = gyroBias.x / 1000;
     gyroBias.y = gyroBias.y / 1000;

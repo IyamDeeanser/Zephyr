@@ -5,18 +5,18 @@
 
 class Barometer {
     public:
-        float altitudeBias;
-        float altitudeBaroAGL;
-        float altitudeBaroMSL;
+        float bias;
+        float altitude;
+        float rawAltitude;
         float temperature;
         float pressure;
 
         bool begin();
-
+        
         void update();
 
-        void getAltitude();
-
+        float getAltitude();
+        
         void setAltitudeBias();
 };
 
