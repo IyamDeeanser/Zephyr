@@ -33,6 +33,12 @@ void GPS_Stats::update(){
 
     //Reads NMEA character by character 
     char c = ZephyrGPS.read();
+    
+    //Prints the NMEA sentence as long as GPS is reading
+    if (ZephyrGPSECHO){
+        if (c) Serial.print(c);
+    }
+    
     // if a sentence is received, we can check the checksum, parse it...
     if (ZephyrGPS.newNMEAreceived()) {
         // we can fail to parse a sentence in which case we should just wait for another
