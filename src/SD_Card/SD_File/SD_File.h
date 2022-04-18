@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "SD.h"
+#include "../../Vec3/Vec3.h"
 
 class SD_File {
     char filePath[50];
@@ -16,38 +17,26 @@ public:
 
     //cansat specific
     void logData(
-            float oriXIDeg, 
-            float oriYIDeg, 
-            float oriZIDeg, 
-            float gyroXBDps, 
-            float gyroYBDps, 
-            float gyroZBDps, 
-            float accelXBMS, 
-            float accelYBMS, 
-            float accelZBMS, 
-            float altEstimateM, 
-            float tvcY, 
-            float tvcZ, 
-            float rwX, 
-            float baroAltBias, 
-            float velXMS, 
-            float pressure_hPa, 
-            float tempIMUC, 
-            float tempBaroC, 
-            float voltage, 
-            int state, 
-            bool abort, 
-            bool abortEnabled, 
-            float massEstKg, 
-            int p1f, 
-            int p2f, 
-            int p3f, 
-            int p1c, 
-            int p2c, 
-            int p3c, 
-            float onTimeSec, 
-            float flightTimeSec
-        );
+        vec3 ori,
+        vec3 accel,
+        vec3 gyro,
+        float altitude,
+        float rwValue,
+        vec3 velocity,
+        vec3 position,
+        float batteryVoltage,
+        float systemState,
+        float cameraState,
+        float reactionWheelState,
+        float onTimeSec,
+        float flightTimeSec,
+        float pressure,
+        float imuTemp,
+        float baroTemp,
+        float GPSSats,
+        float latitude,
+        float longitude
+    );
 };
 
 

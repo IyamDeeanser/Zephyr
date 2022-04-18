@@ -54,38 +54,36 @@ void SD_File::eject() {
     canWrite = false;
 }
 
-void SD_File::logData(float oriXIDeg, float oriYIDeg, float oriZIDeg, float gyroXBDps, float gyroYBDps, float gyroZBDps, float accelXBMS, float accelYBMS, float accelZBMS, float altEstimateM, float tvcY, float tvcZ, float rwX, float baroAltBias, float velXMS, float pressure_hPa, float tempIMUC, float tempBaroC, float voltage, int state, bool abort, bool abortEnabled, float massEstKg, int p1f, int p2f, int p3f, int p1c, int p2c, int p3c, float onTimeSec, float flightTimeSec){
+void SD_File::logData(vec3 ori, vec3 accel, vec3 gyro, float altitude, float rwValue, vec3 velocity, vec3 position, float batteryVoltage, float systemState, float cameraState, float reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude) {
     File file = SD.open(filePath, FILE_WRITE);
-    file.print(oriXIDeg, 3);           file.print(",");
-    file.print(oriYIDeg, 3);           file.print(",");
-    file.print(oriZIDeg, 3);           file.print(",");
-    file.print(gyroXBDps, 3);          file.print(",");
-    file.print(gyroYBDps, 3);          file.print(",");
-    file.print(gyroZBDps, 3);          file.print(",");
-    file.print(accelXBMS, 3);          file.print(",");
-    file.print(accelYBMS, 3);          file.print(",");
-    file.print(accelZBMS, 3);          file.print(",");
-    file.print(altEstimateM, 3);       file.print(",");
-    file.print(tvcY, 3);               file.print(",");
-    file.print(tvcZ, 3);               file.print(",");
-    file.print(rwX, 3);                file.print(",");
-    file.print(baroAltBias, 3);        file.print(",");
-    file.print(velXMS, 3);             file.print(",");
-    file.print(pressure_hPa, 3);       file.print(",");
-    file.print(tempIMUC, 3);           file.print(",");
-    file.print(tempBaroC, 3);          file.print(",");
-    file.print(voltage, 2);            file.print(",");
-    file.print(state);                 file.print(","); 
-    file.print(abort);                 file.print(",");
-    file.print(abortEnabled);          file.print(",");
-    file.print(massEstKg, 3);          file.print(","); 
-    file.print(p1f);                   file.print(",");
-    file.print(p2f);                   file.print(",");
-    file.print(p3f);                   file.print(",");
-    file.print(p1c);                   file.print(",");
-    file.print(p2c);                   file.print(",");
-    file.print(p3c);                   file.print(",");
-    file.print(onTimeSec, 3);          file.print(",");
-    file.println(flightTimeSec, 3);
+    file.print(ori.x, 3);                file.print(",");
+    file.print(ori.y, 3);                file.print(",");
+    file.print(ori.z, 3);                file.print(",");
+    file.print(accel.x, 3);              file.print(",");
+    file.print(accel.y, 3);              file.print(",");
+    file.print(accel.z, 3);              file.print(",");
+    file.print(gyro.x, 3);               file.print(",");
+    file.print(gyro.y, 3);               file.print(",");
+    file.print(gyro.z, 3);               file.print(",");
+    file.print(altitude, 3);             file.print(",");
+    file.print(rwValue, 3);              file.print(",");
+    file.print(velocity.x, 3);           file.print(",");
+    file.print(velocity.y, 3);           file.print(",");
+    file.print(velocity.z, 3);           file.print(",");
+    file.print(position.x, 3);           file.print(",");
+    file.print(position.y, 3);           file.print(",");
+    file.print(position.z, 3);           file.print(",");
+    file.print(batteryVoltage, 3);       file.print(",");
+    file.print(systemState, 3);          file.print(",");
+    file.print(cameraState, 3);          file.print(",");
+    file.print(reactionWheelState, 3);   file.print(",");
+    file.print(onTimeSec, 3);            file.print(",");
+    file.print(flightTimeSec, 3);        file.print(",");
+    file.print(pressure, 3);             file.print(",");
+    file.print(imuTemp, 3);              file.print(",");
+    file.print(baroTemp, 3);             file.print(",");
+    file.print(GPSSats, 3);              file.print(",");
+    file.print(latitude, 3);             file.print(",");
+    file.print(longitude, 3);
     file.close();
 }

@@ -83,7 +83,7 @@ void loop()
   switch(State) {
     case GROUND_IDLE:
       // setup
-      if(GROUND_IDLE_SETUP) {
+      if(GROUND_IDLE_SETUP) { // ! replace w/ state transition
         GROUND_IDLE_SETUP = false;
       }
       // loop

@@ -2,27 +2,18 @@
 #define TELEMETRY_H
 
 #include <Arduino.h>
+#include "../Vec3/Vec3.h"
 
 class Telemetry {
     public:
         void transmit(
-            float oriX,
-            float oriY,
-            float oriZ,
-            float accelX,
-            float accelY,
-            float accelZ,
-            float gyroX,
-            float gyroY,
-            float gyroZ,
+            vec3 ori,
+            vec3 accel,
+            vec3 gyro,
             float altitude,
             float rwValue,
-            float velocityX,
-            float velocityY,
-            float velocityZ,
-            float positionX,
-            float positionY,
-            float positionZ,
+            vec3 velocity,
+            vec3 position,
             float batteryVoltage,
             float systemState,
             float cameraState,
@@ -36,6 +27,7 @@ class Telemetry {
             float latitude,
             float longitude
         );
+        
         void begin();
         void printlnStr(const String & s);
         
