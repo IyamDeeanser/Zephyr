@@ -9,6 +9,11 @@ void Quat::begin()
     pre_q[3] = 0;
 }
 
+void Quat::accelYPR()
+{
+    
+}
+
 void Quat::calculateQuaternion(IMU& gyro, Timer& time)
 {
     //Get the current angular rate

@@ -22,6 +22,7 @@ private:
 public:
     float yaw, pitch, roll;
     void begin();
+    void accelYPR();
     void calculateQuaternion(IMU& gyro, Timer& time);
 };
 
