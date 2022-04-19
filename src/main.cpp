@@ -14,7 +14,7 @@
 #include "Coroutine/Coroutine.h"
 #include "Voltage/Voltage.h"
 #include "GPS/GPS.h"
-#include "Quats/quaternions.h"
+#include "Quaternions/Quaternions.h"
 // ! RCW not included
 // ! PID not included
 // ! Accel Orentation
@@ -33,7 +33,7 @@ IMU Gyro;
 Coroutine SDLogger;
 Coroutine TLMSender;
 GPS_Stats GPS; // ! NOT WORKING
-Quat Quaternion;
+Quaternion Quat;
 
 // Global Constants
 const float G = 9.80;
@@ -42,6 +42,7 @@ const float G = 9.80;
 void logData();
 void sendData();
 void checkForLanding();
+void checkForCommands();
 
 // setup loop
 void setup() {
@@ -72,6 +73,8 @@ void setup() {
   if(!Gyro.begin())
     TLM.printlnStr("IMU FAILED TO INITIALIZE!");
 
+  Quat.begin();
+
   // Coroutines
   SDLogger.begin(logData);
   TLMSender.begin(sendData);
@@ -93,37 +96,30 @@ void loop()
   Baro.update();
   Accel.update();
   Gyro.update();
-  if(State >= POWERED_ASCENT) Quaternion.calculateQuaternion(Gyro, Time);
+  checkForCommands();
 
-  // BARO NEEDS TO BE UPDATED! EVERY LOOP
+  if(State >= POWERED_ASCENT) Quat.calculateQuaternion(Gyro, Time);
+
   // todo SELECT STATE GIVEN CONDITION (in case device restarts mid flight)
   switch(State) {
     case GROUND_IDLE:
-      if(TLM.read() == GOTO_LAUNCH_READY) {
-        SDLogger.resume(); // starts logging data 
-        TLMSender.setFrequency(RATE_HIGH);
-        State = LAUNCH_READY;
-        Baro.setAltitudeBias();
-        // todo MAYBE start GPS connection here (battery reasons)
-        // ? Why is Camera Manually enabled??
-      }
       // @ Maybe auto Switch to ascent IF mag. of velocity > 10 m/s
       break;
 
     case LAUNCH_READY: 
       Gyro.getGyroBias(); // ! NOT TESTED!
-      if(abs(Accel.data.x) > 13 || TLM.read() == GOTO_POWERED_ASCENT) { // alternative, Accel.getAccelMag();
+      if(abs(Accel.data.x) > 13) { // alternative, Accel.getAccelMag();
         State = POWERED_ASCENT;
+        Cam.turnOn(); // ! WARNING: putting this here means the first few seconds of lauch isn't recorded!
         SDLogger.setFrequency(RATE_HIGH);
-        TLMSender.setFrequency(RATE_HIGH);
-        Quaternion.begin(); // ?? why does this need to be here
         Time.logLaunch();
+
         if (Gyro.biasComplete) {
           TLM.printlnStr("GYRO BIAS COMPLETE");
         } else {
           TLM.printlnStr("ERROR: GYRO BIAS INCOMPLETE!");
         }
-        // ! LOG BOTH ACCELS, BUT ONLY TRANSMIT ONE (why not do both tho?) if > 15G use high g else use low g
+
       }
       break;
 
@@ -137,7 +133,6 @@ void loop()
 
     case UNPOWERED_ASCENT:
       // ? Check for < 16g??
-      // ? why check for x axis only?? 
       if(Accel.getAccelMag() < 4 * G) { // ? Is there a possiblity that it never reaches < 4?
         State = SEPARATION;
         TLM.printlnStr("SEPERATION!");
@@ -167,8 +162,8 @@ void loop()
       checkForLanding();
       break;
 
-    case MANUAL_ROLL_CONTROL:
-      // todo add manual
+    case MANUAL_ROLL_CONTROL: // ! we should combine this into one State
+      // todo add manual roll
       checkForLanding(); 
       break;
 
@@ -177,8 +172,6 @@ void loop()
       static long loggedAltTime = millis();
       
       if (abs(loggedAlt - Baro.altitude) > 1) { // ! 1 might be to small
-        // todo auto stop logging when flight is > 1 min
-        // todo manual mission complete
         loggedAlt = Baro.altitude;
         loggedAltTime = millis();
       } else if (millis() - loggedAltTime > 5000) {
@@ -200,8 +193,14 @@ void loop()
 
     default:
       TLM.printlnStr("STATE MACHINE ERROR: Sat is in an unrecognized state!");
+    
+    if(State > LAUNCH_READY && Time.launchTime != 0 && Time.currentTimeMicro - Time.launchTime > 100000 * 60 * 5) { // ! potentially dangerious code
+      State = ABORT; // equibilent of mission complete, but if this every happens we know that something is wrong.
+      logFile.eject();
+      // settingsFile.eject();
+      TLMSender.setFrequency(LOW);
+    }
   }
-  // todo listen for commands from GCS
   // todo Manual State-Switcher based on GCS commands
   
 }
@@ -210,6 +209,8 @@ void loop()
 #define NA 0
 
 void logData() { // ! doesnt match sendData
+  // todo add headers to the logData CSV file
+  // todo log both accels
   logFile.logData(
     vec3(),
     Accel.data,
@@ -235,7 +236,7 @@ void logData() { // ! doesnt match sendData
 
 void sendData() { // ! not all data is here
   TLM.transmit(
-    vec3(Quaternion.pitch, Quaternion.yaw, Quaternion.roll), // orientation // ! i dont know if this is correct
+    vec3(Quat.pitch, Quat.yaw, Quat.roll), // orientation // ! i dont know if this is correct
     (Accel.getAccelMag() > 15 * G) ? Accel.data : Gyro.bodyAccel, // acceleration
     Gyro.bodyGyroDeg, // Gyro 
     Baro.altitude, // altitude
@@ -255,6 +256,69 @@ void sendData() { // ! not all data is here
     0
   );
 }
+
+// ! NOT TESTED!
+void checkForCommands() { // ! i might be paranoid but having unencrypted data means anyone w/ a yagi can intercept & send malicicous commands
+  // Safeguards in code might peg us
+  String Command = TLM.read();
+  if(Command == "GOTO LAUNCH READY") {
+    if(State != GROUND_IDLE) return;
+    SDLogger.resume(); // starts logging data 
+    TLMSender.setFrequency(RATE_HIGH);
+    Baro.setAltitudeBias();
+    // todo MAYBE start GPS connection here (battery reasons)
+    State = LAUNCH_READY;
+    return;
+  }
+  if(Command == "GOTO POWERED ASCENT") {
+    if(State >= POWERED_ASCENT) return;
+
+    if(State == GROUND_IDLE) {
+      Baro.setAltitudeBias();
+      TLMSender.setFrequency(RATE_HIGH);
+      SDLogger.resume();
+    }
+
+    Cam.turnOn();
+    SDLogger.setFrequency(RATE_HIGH);
+    Time.logLaunch();
+
+    if (Gyro.biasComplete) {
+      TLM.printlnStr("GYRO BIAS COMPLETE");
+    } else {
+      TLM.printlnStr("ERROR: GYRO BIAS INCOMPLETE!");
+    }
+    
+    State = POWERED_ASCENT;
+    return;
+  }
+  if(Command == "GOTO ROLL CONTROL") {
+    State = ROLL_CONTROL;
+    return;
+  }
+  if(Command == "") {
+    return;
+  }
+  if(Command == "") {
+    return;
+  }
+  if(Command == "") {
+    return;
+  }
+  if(Command == "") {
+    return;
+  }
+  if(Command == "") {
+    return;
+  }
+  if(Command == "") {
+    return;
+  }
+  if(Command == "SHUTDOWN") { // ! DANGEROUS to add
+    return;
+  }
+}
+
 
 void checkForLanding() {
   if(Baro.altitude < 50) {

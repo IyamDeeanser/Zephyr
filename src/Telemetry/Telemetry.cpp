@@ -29,6 +29,7 @@ void Telemetry::transmit(vec3 ori, vec3 accel, vec3 gyro, float altitude, float 
     Serial1.print(GPSSats, 3);               Serial1.print(",");
     Serial1.print(latitude, 3);              Serial1.print(",");
     Serial1.println(longitude, 3);
+    // ! IF NOT LOGGING FAST ENOUGH use Serial1.flush() to push all chars out before moving on! (blocking function)
 }
 
 void Telemetry::printlnStr(const String & s) {
@@ -46,7 +47,7 @@ String Telemetry::read() {
             return result;
         } else {
             result += c;
-            if(result.length() > 27) result = "";
+            if(result.length() > 30) result = "";
         }
     }
     return "";

@@ -9,7 +9,7 @@
 
 const float pi = 3.1415926535;
 
-class Quat
+class Quaternion
 {
 private:
     float wS[4]; //this is to store angular velocities

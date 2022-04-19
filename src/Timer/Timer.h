@@ -15,7 +15,7 @@ class Timer {
     previousTimeSec,
     lastLogTime,
     lastTlmTransmitTime, 
-    launchTime, 
+    launchTime = 0, 
     burnoutTime, 
     apogeeDetectStartTime, 
     landingDetectStartTime;

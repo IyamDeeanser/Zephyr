@@ -1,6 +1,7 @@
-#include "quaternions.h"
+#include "Quaternions.h"
+
 #include <math.h>
-void Quat::begin()
+void Quaternion::begin()
 {
     //Set the initial quaternion's orientation
     pre_q[0] = 1;
@@ -9,12 +10,12 @@ void Quat::begin()
     pre_q[3] = 0;
 }
 
-void Quat::accelYPR()
+void Quaternion::accelYPR()
 {
     
 }
 
-void Quat::calculateQuaternion(IMU& gyro, Timer& time)
+void Quaternion::calculateQuaternion(IMU& gyro, Timer& time)
 {
     //Get the current angular rate
     wS[0] = 0;

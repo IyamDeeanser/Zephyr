@@ -1,10 +1,10 @@
 #include <Arduino.h>
-#include "Quats/quaternions.h"
+#include "Quaternions/Quaternions.h"
 #include "Timer/Timer.h"
 #include "IMU/IMU.h"
 
 
-Quat quaternion;
+Quaternion quaternion;
 IMU gyro;
 Timer timer1;
 
