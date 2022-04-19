@@ -9,7 +9,6 @@ enum States {
   POWERED_ASCENT,
   UNPOWERED_ASCENT,
   SEPARATION,
-  APOGEE,
   PARACHUTE_DESCENT,
   ROLL_CONTROL,
   MANUAL_ROLL_CONTROL,
@@ -17,11 +16,5 @@ enum States {
   MISSION_COMPLETE,
   ABORT
 };
-
-namespace states {
-  String stateToStr(const States State);
-
-}
- 
 
 #endif

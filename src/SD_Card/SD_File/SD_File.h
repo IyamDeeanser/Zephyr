@@ -12,7 +12,6 @@ public:
     void begin(String name = "file.txt", String folderPath = "");
     void print(String s);
     void println(String s);
-    
     void eject();
 
     //cansat specific

@@ -26,7 +26,7 @@ void GPS_Stats::begin(){
     // Request updates on antenna status 
     ZephyrGPS.sendCommand(PGCMD_ANTENNA); 
 
-    delay(1000); // ! MAY BE A PROBLEM
+    // delay(1000); // ! MAY BE A PROBLEM
     
     // Ask for firmware version
     ZephyrGPS.println(PMTK_Q_RELEASE);

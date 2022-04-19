@@ -18,13 +18,13 @@ bool Barometer::begin() {
 
 void Barometer::update() {
     bmp388.getMeasurements(temperature, pressure, rawAltitude);
-}
-
-float Barometer::getAltitude() {
+    if(rawAltitude > apogee) {
+        apogee = rawAltitude;
+        apogeeTime = millis();
+    }
     altitude = rawAltitude - bias;
-    return altitude;
+    
 }
-
 
 void Barometer::setAltitudeBias(){
     bias = rawAltitude;

@@ -12,7 +12,7 @@ void setup()
 {
     gyro.begin();
     gyro.getGyroBias();
-    quaternion.begin();
+    
     SerialUSB.begin(9600);
 }
 

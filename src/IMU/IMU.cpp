@@ -35,11 +35,11 @@ void IMU::update() {
     bodyAccel.z = accel.acceleration.z;
 }
 
-void IMU::getGyroBias() { // ! UNTESTED FUNCTION
+void IMU::getGyroBias() {
     const static unsigned long startTime = millis();
+    static int loopNum = 0;
     const int delayTime = 6; // in milliseconds
     const int totalLoops = 1000;
-    int loopNum = 0;
 
     if (biasComplete) return;
 
