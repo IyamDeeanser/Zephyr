@@ -1,37 +1,65 @@
-#ifndef GPS_H
-#define GPS_H
+#include <GPS.h>
 
-#include <Arduino.h>
-#include <Adafruit_GPS.h>
-#include <SPI.h>
-#include <Wire.h>
+GPS_Stats::GPS_Stats(){
 
-// Set ZephyrGPSECHO to 'false' to turn off echoing the ZephyrGPS data to the Serial console
-#define ZephyrGPSECHO false
+    //Initializes everything to 0
+        //If GPS not responding then all variables will be equal to zero, and it will be obvious there is a problem
+    generalLat = "Nothing";
+    generalLon = "Also Nothing";
+    altitude = 0.0;
+    speed = 0.0;
+    angle= 0.0;
+    numSatellites = 0;
+}
 
-class GPS_Stats{
+void GPS_Stats::begin(){
+    SerialUSB.begin(115200);
+    SerialUSB.println("Please work omg :'(");
+    GPS.begin(0x10); //Change address if needed depending on where GPS is
 
-public:
-    //The GPS object
-    Adafruit_GPS GPS;
+    //turns on RMC (recommended minimum) and GGA (fix data) including altitude
+    GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+  
+    GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
 
-    //A timer to make sure data isn't jamming and updating properly
-    uint32_t timer = millis();
+    // Request updates on antenna status 
+    GPS.sendCommand(PGCMD_ANTENNA);
 
-    //Value variables, public for simplicity 
-    String generalLat;
-    String generalLon;
-    float altitude;
-    float speed;
-    float angle;
-    int numSatellites;
-    int fix;
-    int fixQuality;
+    delay(1000);
+    
+    // Ask for firmware version
+    GPS.println(PMTK_Q_RELEASE);
+}
 
-    //Constructor and update function declaration
-    GPS_Stats();
-    void begin();
-    void update();
-};
+void GPS_Stats::update(){
 
-#endif
+    //Reads NMEA character by character 
+    char c = GPS.read();
+
+    if (ZephyrGPSECHO){
+        if (c) Serial.print(c);
+    }
+    // if a sentence is received, we can check the checksum, parse it...
+    if (GPS.newNMEAreceived()) {
+        // we can fail to parse a sentence in which case we should just wait for another
+        if (!GPS.parse(GPS.lastNMEA())) {return;} 
+    }
+
+// approximately every 2 seconds or so, update the current stats
+  if (millis() - timer > 2000) {
+    timer = millis(); // reset the timer
+    fix = (int)GPS.fix;
+    fixQuality = (int)GPS.fixquality;
+    if (GPS.fix) {
+        generalLat = GPS.latitude;
+        generalLon = GPS.longitude;
+        speed = GPS.speed;
+        angle = GPS.angle;
+        altitude = (GPS.altitude)/100.0;
+        numSatellites = (int)GPS.satellites;
+    }
+    else{
+        SerialUSB.print("Ew no fix again. :(");
+    }
+  }
+}
