@@ -5,8 +5,8 @@
 
 class ReactionWheel {
 private:
-    int outPin1 = 5;
-    int outPin2 = 11;
+    const int outPin1 = 5;
+    const int outPin2 = 11;
 public:
     float wheelOutput;
 

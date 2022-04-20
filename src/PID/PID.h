@@ -15,7 +15,7 @@ private:
 public:
   PID();
   float Output = 0;
-  void calculate(Timer time, IMU gyro);
+  void update(Timer time, IMU gyro);
   void setSetpoint(float newPoint);
 };
 

@@ -3,7 +3,7 @@
 PID::PID()
 {}
 
-void PID::calculate(Timer time, IMU gyro)
+void PID::update(Timer time, IMU gyro)
 {
     //PID
     lastError = error;
