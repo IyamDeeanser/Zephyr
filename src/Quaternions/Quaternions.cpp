@@ -15,7 +15,7 @@ void Quaternion::accelYPR()
     
 }
 
-void Quaternion::calculateQuaternion(IMU& gyro, Timer& time)
+void Quaternion::update(IMU& gyro, Timer& time)
 {
     //Get the current angular rate
     wS[0] = 0;

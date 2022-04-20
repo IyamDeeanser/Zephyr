@@ -18,15 +18,14 @@ public:
     void logData(
         vec3 ori,
         vec3 accel,
+        vec3 accelHG,
         vec3 gyro,
         float altitude,
         float rwValue,
-        vec3 velocity,
-        vec3 position,
         float batteryVoltage,
         const int & systemState,
         const bool & cameraState,
-        float reactionWheelState,
+        bool reactionWheelState,
         float onTimeSec,
         float flightTimeSec,
         float pressure,
@@ -34,8 +33,9 @@ public:
         float baroTemp,
         float GPSSats,
         float latitude,
-        float longitude
-        );
+        float longitude,
+        bool RWState
+    );
 };
 
 

@@ -72,8 +72,10 @@ void setup() {
   // Files
   String flightFolderPath = SD_Card::createNewDir();
   logFile.begin("file.txt", flightFolderPath);
+  logFile.println("ori.x,ori.y,ori.z,accel.x,accel.y,accel.z,accelHighG.x,accelHighG.y,accelHighG.z,gyro.x,gyro.y,gyro.z,altitude,rwValue,batteryVoltage,systemState,cameraState,RWState,onTimeSec,flightTimeSec,pressure,imuTemp,baroTemp,GPSSats,latitude,longitude");
+  // ^ printing header log file
   settingsFile.begin("settings.txt", flightFolderPath);
-
+  
   // camera
   Cam.initialize();
   
@@ -89,6 +91,7 @@ void setup() {
   if(!Gyro.begin())
     TLM.printlnStr("IMU FAILED TO INITIALIZE!");
 
+  // Quaternions
   Quat.begin();
 
   // Coroutines
@@ -96,10 +99,10 @@ void setup() {
   TLMSender.begin(sendData);
   SDLogger.pause(); // SD Card starts logging at Launch Ready
 
+  // GPS
   GPS.begin();
 
-  TLM.printlnStr("INITALIZATION COMPLETE"); 
-  // todo ADD BROWNOUT SAFEGUARD
+  TLM.printlnStr("SETUP COMPLETE"); 
 }
 
 void loop() 
@@ -113,12 +116,15 @@ void loop()
   Accel.update();
   Gyro.update();
   checkForCommands();
-
-  if(State >= POWERED_ASCENT) Quat.calculateQuaternion(Gyro, Time);
+  if(State >= POWERED_ASCENT) Quat.update(Gyro, Time); // what happens if quat updats before powered ascent?
 
   // todo SELECT STATE GIVEN CONDITION (in case device restarts mid flight)
   switch(State) {
     case GROUND_IDLE:
+      // !! Brownout (Ghetto?)
+      const static float startupAltitude = Baro.altitude;
+      if(Baro.altitude > startupAltitude + 50) gotoState(POWERED_ASCENT);
+      if(Baro.rawAltitude < Baro.altitude - 50) gotoState(PARACHUTE_DESCENT); // ! may have bugs since many stages are skipped
       // @ Maybe auto Switch to ascent IF mag. of velocity > 10 m/s
       break;
 
@@ -159,6 +165,8 @@ void loop()
 
     case ROLL_CONTROL:
       // ! PID & RCW not done yet
+      // ! we need a bool that tells us if we are controlling roll manually 
+      // todo add manual roll
       if(Baro.altitude < 50) gotoState(LANDING); // ! maybe call Baro.alt -> Baro.RELATIVEALT
       break;
 
@@ -192,37 +200,33 @@ void loop()
       // settingsFile.eject();
       TLMSender.setFrequency(LOW);
     }
-  }
-  // todo Manual State-Switcher based on GCS commands
-  
+  }  
 }
 
-// TEMP variable for varialbes I don't have
+// @ TEMP variable for unkonwn inputs
 #define NA 0
 
 void logData() { // ! doesnt match sendData
-  // todo add headers to the logData CSV file
-  // todo log both accels
   logFile.logData(
-    vec3(),
+    vec3(Quat.pitch, Quat.yaw, Quat.roll), // orientation // ! i dont know if this is correct
+    Gyro.bodyAccel, // acceleration
     Accel.data,
-    Gyro.bodyGyroDeg,
-    Baro.altitude,
-    NA,
-    NA,
-    vec3(),
-    Voltage::getVoltage(),
-    State,
-    Cam.getState(),
-    NA,
-    Time.currentTimeSec, // ? Maybe use Micro for SD for more precision
-    Time.launchTime, // ? Micro too?
-    Baro.pressure,
-    Gyro.temperature,
+    Gyro.bodyGyroDeg, // Gyro 
+    Baro.altitude, // altitude
+    NA, // RCW value
+    Voltage::getVoltage(), // batt voltage
+    State, // (int) state
+    Cam.getState(), // (bool) cam state
+    NA, // (bool) rwState // ! not sure
+    Time.currentTimeSec, // on time in secs
+    Time.launchTime  / 1000000.0, // Converting Micro -> Seconds
+    Baro.pressure, // imu temp
+    Gyro.temperature, // imu temp
     Baro.temperature,
     NA,
     NA,
-    NA
+    NA,
+    0
   );
 }
 
@@ -275,7 +279,7 @@ void checkForCommands() { // ! i might be paranoid but having unencrypted data m
   }
 }
 
-void gotoState(States target) {
+void gotoState(States target) { // ! we can add a FORCE parameter to bypass safeguards
   switch (target)
   {
   case GROUND_IDLE:
@@ -289,10 +293,11 @@ void gotoState(States target) {
     Baro.setAltitudeBias();
     // todo MAYBE start GPS connection here (battery reasons)
     State = LAUNCH_READY;
+    TLM.printlnStr("STATE: LAUNCH READY");
     return;
 
   case POWERED_ASCENT:
-    if(State >= POWERED_ASCENT) return; // !! should these safeguards be here?
+    if(State >= POWERED_ASCENT) return; // !! should these safeguards be here?, will peg us if we go try to go back a state
     if(State == GROUND_IDLE) {
       Baro.setAltitudeBias();
       TLMSender.setFrequency(RATE_HIGH);
@@ -303,34 +308,40 @@ void gotoState(States target) {
     Time.logLaunch();
     if (!Gyro.biasComplete) TLM.printlnStr("WARNING: GYRO BIAS INCOMPLETE!");
     State = POWERED_ASCENT;
+    TLM.printlnStr("STATE: POWER ASCENT");
     return;
 
   case UNPOWERED_ASCENT:
     SDLogger.setFrequency(RATE_MEDIUM);
     // if(State != POWERED_ASCENT) // @ do something
     State = UNPOWERED_ASCENT;
+    TLM.printlnStr("STATE: UNPOWERED ASCENT");
     return;
 
   case SEPARATION:
     TLM.printlnStr("SEPERATION!");
-    State = SEPARATION;   
+    State = SEPARATION;
+    TLM.printlnStr("STATE: SEPARATION");
     return;
 
   case PARACHUTE_DESCENT:
     SDLogger.setFrequency(RATE_HIGH);
     TLM.printlnStr("APOGEE REACHED! Agopee: " + String(Baro.apogee - Baro.bias));
     State = PARACHUTE_DESCENT;
+    TLM.printlnStr("STATE: PARACHUTE DESCENT");
     return;
 
   case ROLL_CONTROL:
     // todo CONNECT DC MOTOR DIGITALLY
     State = ROLL_CONTROL;
+    TLM.printlnStr("STATE: ROLL CONTROL");
     return;
 
   case LANDING:
     // todo disable motor
     SDLogger.setFrequency(RATE_MEDIUM);
     State = LANDING;
+    TLM.printlnStr("STATE: LANDING");
     return;
 
   case MISSION_COMPLETE:
@@ -339,10 +350,11 @@ void gotoState(States target) {
       // ! maybe log some settings data, & eject that too!
       TLMSender.setFrequency(RATE_LOW);
       State = MISSION_COMPLETE;
+      TLM.printlnStr("MISSION COMPLETE!");
     return;
 
   case ABORT:
-    // ! this means something bad happened
+    // ! this means something bad happened do we need this?
     return;
 
   default:
