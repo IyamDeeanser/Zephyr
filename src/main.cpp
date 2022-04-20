@@ -57,8 +57,8 @@ const float G = 9.80;
 // Prototype Functions
 void logData();
 void sendData();
-void checkForLanding();
 void checkForCommands();
+void gotoState(States target);
 
 // setup loop
 void setup() {
@@ -125,41 +125,26 @@ void loop()
     case LAUNCH_READY: 
       Gyro.getGyroBias(); // ! NOT TESTED!
       if(abs(Accel.data.x) > 13) { // alternative, Accel.getAccelMag();
-        State = POWERED_ASCENT;
-        Cam.turnOn(); // ! WARNING: putting this here means the first few seconds of lauch isn't recorded!
-        SDLogger.setFrequency(RATE_HIGH);
-        Time.logLaunch();
-
-        if (Gyro.biasComplete) {
-          TLM.printlnStr("GYRO BIAS COMPLETE");
-        } else {
-          TLM.printlnStr("ERROR: GYRO BIAS INCOMPLETE!");
-        }
-
+        gotoState(POWERED_ASCENT);
       }
       break;
 
     case POWERED_ASCENT:
       if(Accel.getAccelMag() < 2 * G) { 
-        State = UNPOWERED_ASCENT;
-        // ! Switch to low G-Acc Readings
-        SDLogger.setFrequency(RATE_MEDIUM);
+        gotoState(UNPOWERED_ASCENT);
       }
       break;
 
     case UNPOWERED_ASCENT:
       // ? Check for < 16g??
       if(Accel.getAccelMag() < 4 * G) { // ? Is there a possiblity that it never reaches < 4?
-        State = SEPARATION;
-        TLM.printlnStr("SEPERATION!");
+        gotoState(SEPARATION);
       }
       break;
     
     case SEPARATION:
       if(Baro.rawAltitude < Baro.apogee && millis() >= Baro.apogeeTime + 1000) { // @ raw Alt is used here in case alt isn't set.
-        State = PARACHUTE_DESCENT;
-        SDLogger.setFrequency(RATE_HIGH);
-        TLM.printlnStr("APOGEE REACHED! Agopee: " + String(Baro.apogee - Baro.bias));
+        gotoState(PARACHUTE_DESCENT);
       }
       break;
 
@@ -167,20 +152,14 @@ void loop()
       static unsigned int parachuteDescentStartTime = millis();
       // todo add manual switcdh to roll control
       if (millis() > parachuteDescentStartTime + 2000)  { // ! delay is arbritrary
-        State = ROLL_CONTROL;
+        gotoState(ROLL_CONTROL);
       }
 
       break;
 
     case ROLL_CONTROL:
-      // CONNECT DC MOTOR DIGITALLY
       // ! PID & RCW not done yet
-      checkForLanding();
-      break;
-
-    case MANUAL_ROLL_CONTROL: // ! we should combine this into one State
-      // todo add manual roll
-      checkForLanding(); 
+      if(Baro.altitude < 50) gotoState(LANDING); // ! maybe call Baro.alt -> Baro.RELATIVEALT
       break;
 
     case LANDING: // ! untested
@@ -191,10 +170,7 @@ void loop()
         loggedAlt = Baro.altitude;
         loggedAltTime = millis();
       } else if (millis() - loggedAltTime > 5000) {
-        State = MISSION_COMPLETE;
-        Cam.turnOff();
-        logFile.eject();
-        TLMSender.setFrequency(RATE_LOW);
+        gotoState(MISSION_COMPLETE);
       }
 
       break;
@@ -278,50 +254,14 @@ void checkForCommands() { // ! i might be paranoid but having unencrypted data m
   // Safeguards in code might peg us
   String Command = TLM.read();
   if(Command == "GOTO LAUNCH READY") {
-    if(State != GROUND_IDLE) return;
-    SDLogger.resume(); // starts logging data 
-    TLMSender.setFrequency(RATE_HIGH);
-    Baro.setAltitudeBias();
-    // todo MAYBE start GPS connection here (battery reasons)
-    State = LAUNCH_READY;
-    return;
+    gotoState(LAUNCH_READY);
   }
   if(Command == "GOTO POWERED ASCENT") {
-    if(State >= POWERED_ASCENT) return;
-
-    if(State == GROUND_IDLE) {
-      Baro.setAltitudeBias();
-      TLMSender.setFrequency(RATE_HIGH);
-      SDLogger.resume();
-    }
-
-    Cam.turnOn();
-    SDLogger.setFrequency(RATE_HIGH);
-    Time.logLaunch();
-
-    if (Gyro.biasComplete) {
-      TLM.printlnStr("GYRO BIAS COMPLETE");
-    } else {
-      TLM.printlnStr("ERROR: GYRO BIAS INCOMPLETE!");
-    }
-    
-    State = POWERED_ASCENT;
+    gotoState(POWERED_ASCENT);
     return;
   }
   if(Command == "GOTO ROLL CONTROL") {
     State = ROLL_CONTROL;
-    return;
-  }
-  if(Command == "") {
-    return;
-  }
-  if(Command == "") {
-    return;
-  }
-  if(Command == "") {
-    return;
-  }
-  if(Command == "") {
     return;
   }
   if(Command == "") {
@@ -335,11 +275,77 @@ void checkForCommands() { // ! i might be paranoid but having unencrypted data m
   }
 }
 
+void gotoState(States target) {
+  switch (target)
+  {
+  case GROUND_IDLE:
+    // ! this probably means theres an error in our program.
+    return;
 
-void checkForLanding() {
-  if(Baro.altitude < 50) {
-    State = LANDING;
+  case LAUNCH_READY:
+    if(State != GROUND_IDLE) return;
+    SDLogger.resume(); // starts logging data 
+    TLMSender.setFrequency(RATE_HIGH);
+    Baro.setAltitudeBias();
+    // todo MAYBE start GPS connection here (battery reasons)
+    State = LAUNCH_READY;
+    return;
+
+  case POWERED_ASCENT:
+    if(State >= POWERED_ASCENT) return; // !! should these safeguards be here?
+    if(State == GROUND_IDLE) {
+      Baro.setAltitudeBias();
+      TLMSender.setFrequency(RATE_HIGH);
+      SDLogger.resume();
+    }
+    Cam.turnOn(); // ! WARNING: putting this here means the first few seconds of lauch isn't recorded!
+    SDLogger.setFrequency(RATE_HIGH);
+    Time.logLaunch();
+    if (!Gyro.biasComplete) TLM.printlnStr("WARNING: GYRO BIAS INCOMPLETE!");
+    State = POWERED_ASCENT;
+    return;
+
+  case UNPOWERED_ASCENT:
+    SDLogger.setFrequency(RATE_MEDIUM);
+    // if(State != POWERED_ASCENT) // @ do something
+    State = UNPOWERED_ASCENT;
+    return;
+
+  case SEPARATION:
+    TLM.printlnStr("SEPERATION!");
+    State = SEPARATION;   
+    return;
+
+  case PARACHUTE_DESCENT:
+    SDLogger.setFrequency(RATE_HIGH);
+    TLM.printlnStr("APOGEE REACHED! Agopee: " + String(Baro.apogee - Baro.bias));
+    State = PARACHUTE_DESCENT;
+    return;
+
+  case ROLL_CONTROL:
+    // todo CONNECT DC MOTOR DIGITALLY
+    State = ROLL_CONTROL;
+    return;
+
+  case LANDING:
     // todo disable motor
     SDLogger.setFrequency(RATE_MEDIUM);
+    State = LANDING;
+    return;
+
+  case MISSION_COMPLETE:
+      Cam.turnOff();
+      logFile.eject();
+      // ! maybe log some settings data, & eject that too!
+      TLMSender.setFrequency(RATE_LOW);
+      State = MISSION_COMPLETE;
+    return;
+
+  case ABORT:
+    // ! this means something bad happened
+    return;
+
+  default:
+    break;
   }
 }
