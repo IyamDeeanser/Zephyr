@@ -13,15 +13,20 @@ class GPS_Stats{
 
 public:
     //The GPS object
-    Adafruit_GPS ZephyrGPS;
+    Adafruit_GPS GPS;
+
+    //A timer to make sure data isn't jamming and updating properly
+    uint32_t timer = millis();
 
     //Value variables, public for simplicity 
-    float latitude;
-    float longitude;
+    String generalLat;
+    String generalLon;
     float altitude;
     float speed;
     float angle;
     int numSatellites;
+    int fix;
+    int fixQuality;
 
     //Constructor and update function declaration
     GPS_Stats();
