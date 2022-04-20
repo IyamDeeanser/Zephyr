@@ -1,18 +1,8 @@
-#include <GPS.h>
+#define GPSECHO false
+#include <Adafruit_GPS.h>
+#include "GPS Variables.cpp"
 
-GPS_Stats::GPS_Stats(){
-
-    //Initializes everything to 0
-        //If GPS not responding then all variables will be equal to zero, and it will be obvious there is a problem
-    generalLat = "Nothing";
-    generalLon = "Also Nothing";
-    altitude = 0.0;
-    speed = 0.0;
-    angle= 0.0;
-    numSatellites = 0;
-}
-
-void GPS_Stats::begin(){
+void GPSBegin(Adafruit_GPS GPS){
     SerialUSB.begin(115200);
     SerialUSB.println("Please work omg :'(");
     GPS.begin(0x10); //Change address if needed depending on where GPS is
@@ -31,45 +21,44 @@ void GPS_Stats::begin(){
     GPS.println(PMTK_Q_RELEASE);
 }
 
-void GPS_Stats::update(){
-
-    //Reads NMEA character by character 
+void GPSUpdate(Adafruit_GPS GPS, GPSVariables &GVar){
+    // read data from the GPS in the 'main loop'
     char c = GPS.read();
-
-    if (ZephyrGPSECHO){
+    // if you want to debug, this is a good time to do it!
+    if (GPSECHO)
         if (c) Serial.print(c);
-    }
     // if a sentence is received, we can check the checksum, parse it...
     if (GPS.newNMEAreceived()) {
-        // we can fail to parse a sentence in which case we should just wait for another
-        if (!GPS.parse(GPS.lastNMEA())) {return;} 
+        Serial.println(GPS.lastNMEA()); // this also sets the newNMEAreceived() flag to false
+        if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
+        return; // we can fail to parse a sentence in which case we should just wait for another
     }
 
 // approximately every 2 seconds or so, update the current stats
-  if (millis() - timer > 2000) {
-    timer = millis(); // reset the timer
-    fix = (int)GPS.fix;
-    fixQuality = (int)GPS.fixquality;
+  if (millis() - GVar.timer > 2000) {
+    GVar.timer = millis(); // reset the timer
+    GVar.fix = (int)GPS.fix;
+    GVar.fixQuality = (int)GPS.fixquality;
     if (GPS.fix) {
-        generalLat = GPS.latitude;
+        GVar.latitude = GPS.latitude;
         SerialUSB.print("Latitude: ");
-        SerialUSB.print(generalLat);
+        SerialUSB.print(GVar.latitude);
 
-        generalLon = GPS.longitude;
+        GVar.longitude = GPS.longitude;
         SerialUSB.print("Longitude: ");
-        SerialUSB.print(generalLon);
+        SerialUSB.print(GVar.longitude);
 
-        speed = GPS.speed;
+        GVar.speed = GPS.speed;
         SerialUSB.print("Speed: ");
-        SerialUSB.print(speed);
+        SerialUSB.print(GVar.speed);
 
-        angle = GPS.angle;
+        GVar.angle = GPS.angle;
         SerialUSB.print("Angle: ");
-        SerialUSB.print(angle);
+        SerialUSB.print(GVar.angle);
 
-        altitude = (GPS.altitude)/100.0;
+        GVar.altitude = (GPS.altitude)/100.0;
 
-        numSatellites = (int)GPS.satellites;
+        GVar.numSatellites = (int)GPS.satellites;
     }
     else{
         SerialUSB.print("Ew no fix again. :(");
