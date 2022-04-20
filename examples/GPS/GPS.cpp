@@ -52,10 +52,23 @@ void GPS_Stats::update(){
     fixQuality = (int)GPS.fixquality;
     if (GPS.fix) {
         generalLat = GPS.latitude;
+        SerialUSB.print("Latitude: ");
+        SerialUSB.print(generalLat);
+
         generalLon = GPS.longitude;
+        SerialUSB.print("Longitude: ");
+        SerialUSB.print(generalLon);
+
         speed = GPS.speed;
+        SerialUSB.print("Speed: ");
+        SerialUSB.print(speed);
+
         angle = GPS.angle;
+        SerialUSB.print("Angle: ");
+        SerialUSB.print(angle);
+
         altitude = (GPS.altitude)/100.0;
+
         numSatellites = (int)GPS.satellites;
     }
     else{
