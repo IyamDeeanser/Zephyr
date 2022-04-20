@@ -1,55 +1,37 @@
-#include "GPS.h"
+#ifndef GPS_H
+#define GPS_H
 
-GPS_Stats::GPS_Stats(){
+#include <Arduino.h>
+#include <Adafruit_GPS.h>
+#include <SPI.h>
+#include <Wire.h>
 
-    //Initializes everything to 0
-        //If GPS not responding then all variables will be equal to zero, and it will be obvious there is a problem
-    latitude = 0.0;
-    longitude = 0.0;
-    altitude = 0.0;
-    speed = 0.0;
-    angle= 0.0;
-    numSatellites = 0;
-}
+// Set ZephyrGPSECHO to 'false' to turn off echoing the ZephyrGPS data to the Serial console
+#define ZephyrGPSECHO false
 
-void GPS_Stats::begin(){
-    ZephyrGPS.begin(0x10); //Change address if needed depending on where GPS is
+class GPS_Stats{
 
-    //turns on RMC (recommended minimum) and GGA (fix data) including altitude
-    ZephyrGPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-  
-    ZephyrGPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
+public:
+    //The GPS object
+    Adafruit_GPS GPS;
 
-    // Request updates on antenna status 
-    ZephyrGPS.sendCommand(PGCMD_ANTENNA);
+    //A timer to make sure data isn't jamming and updating properly
+    uint32_t timer = millis();
 
-    delay(1000);
-    
-    // Ask for firmware version
-    ZephyrGPS.println(PMTK_Q_RELEASE);
-}
+    //Value variables, public for simplicity 
+    String generalLat;
+    String generalLon;
+    float altitude;
+    float speed;
+    float angle;
+    int numSatellites;
+    int fix;
+    int fixQuality;
 
-void GPS_Stats::update(){
+    //Constructor and update function declaration
+    GPS_Stats();
+    void begin();
+    void update();
+};
 
-    //Reads NMEA character by character 
-    char c = ZephyrGPS.read();
-    
-    //Prints the NMEA sentence as long as GPS is reading
-    if (ZephyrGPSECHO){
-        if (c) Serial.print(c);
-    }
-    
-    // if a sentence is received, we can check the checksum, parse it...
-    if (ZephyrGPS.newNMEAreceived()) {
-        // we can fail to parse a sentence in which case we should just wait for another
-        if (!ZephyrGPS.parse(ZephyrGPS.lastNMEA())) {return;} 
-    }
-
-    //Updates each variable with new information
-    latitude = ZephyrGPS.latitude;
-    longitude = ZephyrGPS.longitude;
-    altitude = ZephyrGPS.altitude;
-    speed = ZephyrGPS.speed;
-    angle= ZephyrGPS.angle;
-    numSatellites = ZephyrGPS.satellites;
-}
+#endif
