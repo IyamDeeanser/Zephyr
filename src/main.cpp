@@ -286,6 +286,7 @@ void checkForCommands() { // ! i might be paranoid but having unencrypted data m
   if(Command == "SHUTDOWN") { // ! DANGEROUS to add
     return;
   }
+  // ! <AS> Advacned state, <CL> Camera off, <CH> Camera on <SP> State machine setpoint <GY> gyro debias
 }
 
 void gotoState(States target) { // ! we can add a FORCE parameter to bypass safeguards
