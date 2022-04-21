@@ -241,7 +241,7 @@ void logData() { // ! doesnt match sendData
 
 void sendData() { // ! not all data is here
   TLM.transmit(
-    vec3(Quat.pitch, Quat.yaw, Quat.roll), // orientation // ! i dont know if this is correct
+    vec3(Quat.roll, Quat.pitch, Quat.yaw), // orientation // ! i dont know if this is correct
     (Accel.getAccelMag() > 15 * G) ? Accel.data : imu.bodyAccel, // acceleration
     imu.bodyGyroDeg, // Gyro 
     Baro.altitude, // altitude
@@ -344,13 +344,11 @@ void gotoState(States target) { // ! we can add a FORCE parameter to bypass safe
     return;
 
   case ROLL_CONTROL:
-    // todo CONNECT DC MOTOR DIGITALLY
     State = ROLL_CONTROL;
     TLM.printlnStr("STATE: ROLL CONTROL");
     return;
 
   case LANDING:
-    // todo disable motor
     SDLogger.setFrequency(RATE_MEDIUM);
     State = LANDING;
     TLM.printlnStr("STATE: LANDING");
