@@ -34,7 +34,7 @@ public:
         float GPSSats,
         float latitude,
         float longitude,
-        bool RWState
+        float positionX
     );
 };
 

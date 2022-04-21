@@ -6,4 +6,5 @@ Team Zephyr's flight and GCS code repository for the 2022 Canadian CanSat Design
 - Brian Zhou
 - Jessica Tang
 - Vhea He
+- Kentarou Howard
  

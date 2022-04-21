@@ -45,7 +45,7 @@ SD_File settingsFile; // ! we havent dont anything w/ this file yet
 Camera Cam;
 Accelerometer Accel;
 Barometer Baro;
-IMU Gyro;
+IMU imu;
 Coroutine SDLogger;
 Coroutine TLMSender;
 GPS_Stats GPS; // ! NOT WORKING
@@ -73,8 +73,8 @@ void setup() {
 
   // Files
   String flightFolderPath = SD_Card::createNewDir();
-  logFile.begin("file.txt", flightFolderPath);
-  logFile.println("ori.x,ori.y,ori.z,accel.x,accel.y,accel.z,accelHighG.x,accelHighG.y,accelHighG.z,gyro.x,gyro.y,gyro.z,altitude,rwValue,batteryVoltage,systemState,cameraState,RWState,onTimeSec,flightTimeSec,pressure,imuTemp,baroTemp,GPSSats,latitude,longitude");
+  logFile.begin("data.csv", flightFolderPath);
+  logFile.println("Ori x (deg),Ori y (deg),Ori z (deg),Accel x (m/s^2),Accel y (m/s^2),Accel z (m/s^2),AccelHiG x (m/s^2),AccelHiG y (m/s^2),AccelHiG z (m/s^2),Gyro x (deg/s),Gyro y (deg/s),Gyro z (deg/s),Baro Alt AGL (m),GPS Altitude (m),RW Value,Voltage,State,Cam State,RW State,On Time (sec),Flight Time (sec),Pressure (hPa),IMU Temp (C),Baro Temp (C),GPS Sats,Latitude,Longitude");
   // ^ printing header log file
   settingsFile.begin("settings.txt", flightFolderPath);
   
@@ -90,7 +90,7 @@ void setup() {
     TLM.printlnStr("BAROMETER FAILED TO INITIALIZE!");
 
   // Inertial Measurement Unit
-  if(!Gyro.begin())
+  if(!imu.begin())
     TLM.printlnStr("IMU FAILED TO INITIALIZE!");
 
   // Quaternions
@@ -116,9 +116,9 @@ void loop()
   GPS.update();
   Baro.update();
   Accel.update();
-  Gyro.update();
+  imu.update();
   checkForCommands();
-  if(State >= POWERED_ASCENT) Quat.update(Gyro, Time); // what happens if quat updats before powered ascent?
+  if(State >= POWERED_ASCENT) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
 
   // todo SELECT STATE GIVEN CONDITION (in case device restarts mid flight)
   switch(State) {
@@ -131,7 +131,7 @@ void loop()
       break;
 
     case LAUNCH_READY: 
-      Gyro.getGyroBias(); // ! NOT TESTED!
+      imu.getGyroBias(); // ! NOT TESTED!
       if(abs(Accel.data.x) > 13) { // alternative, Accel.getAccelMag();
         gotoState(POWERED_ASCENT);
       }
@@ -159,7 +159,7 @@ void loop()
     case PARACHUTE_DESCENT:
       static unsigned int parachuteDescentStartTime = millis();
       // todo add manual switcdh to roll control
-      if (millis() > parachuteDescentStartTime + 2000)  { // ! delay is arbritrary
+      if (millis() > parachuteDescentStartTime + 5000)  { // ! delay is arbritrary
         gotoState(ROLL_CONTROL);
       }
 
@@ -169,9 +169,13 @@ void loop()
       // ! PID & RCW not done yet
       // ! we need a bool that tells us if we are controlling roll manually 
       // todo add manual roll
-      if(Baro.altitude < 50) gotoState(LANDING); // ! maybe call Baro.alt -> Baro.RELATIVEALT
-      Roll.update(Time,Gyro);
+      if(Baro.altitude <= 50) {
+        gotoState(LANDING); // ! maybe call Baro.alt -> Baro.RELATIVEALT
+      }
+
+      Roll.update(Time,imu);
       RCW.writeWheelOutput(Roll.Output);
+      
       break;
 
     case LANDING: // ! untested
@@ -185,14 +189,15 @@ void loop()
         gotoState(MISSION_COMPLETE);
       }
 
+      //If gyros are all below 0.1 rad/s, we have landed
+      if((abs(imu.bodyGyroRad.x) < 0.1) && (abs(imu.bodyGyroRad.y) < 0.1) && (abs(imu.bodyGyroRad.z) < 0.1)){ 
+        gotoState(MISSION_COMPLETE);
+      }
+
       break;
 
     case MISSION_COMPLETE:
       // ! This does nothing
-      break;
-
-    case ABORT:
-      TLM.printlnStr("MISSION ABORTED!");
       break;
 
     default:
@@ -213,47 +218,47 @@ void loop()
 void logData() { // ! doesnt match sendData
   logFile.logData(
     vec3(Quat.pitch, Quat.yaw, Quat.roll), // orientation // ! i dont know if this is correct
-    Gyro.bodyAccel, // acceleration
+    imu.bodyAccel, // acceleration
     Accel.data,
-    Gyro.bodyGyroDeg, // Gyro 
+    imu.bodyGyroDeg, // Gyro 
     Baro.altitude, // altitude
-    NA, // RCW value
+    NA, //Position from GPS
+    RCW.getValue(), // RCW value
     Voltage::getVoltage(), // batt voltage
     State, // (int) state
     Cam.getState(), // (bool) cam state
-    NA, // (bool) rwState // ! not sure
+    RCW.getState(),
     Time.currentTimeSec, // on time in secs
-    Time.launchTime  / 1000000.0, // Converting Micro -> Seconds
+    Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Converting Micro -> Seconds
     Baro.pressure, // imu temp
-    Gyro.temperature, // imu temp
+    imu.temperature, // imu temp
     Baro.temperature,
-    NA,
-    NA,
-    NA,
-    0
+    NA, //GPS sats
+    NA, //Lat 
+    NA //lon
   );
 }
 
 void sendData() { // ! not all data is here
   TLM.transmit(
     vec3(Quat.pitch, Quat.yaw, Quat.roll), // orientation // ! i dont know if this is correct
-    (Accel.getAccelMag() > 15 * G) ? Accel.data : Gyro.bodyAccel, // acceleration
-    Gyro.bodyGyroDeg, // Gyro 
+    (Accel.getAccelMag() > 15 * G) ? Accel.data : imu.bodyAccel, // acceleration
+    imu.bodyGyroDeg, // Gyro 
     Baro.altitude, // altitude
-    NA, // RCW value
+    NA, //GPS altitude
+    RCW.getValue(), // RCW value
     Voltage::getVoltage(), // batt voltage
     State, // (int) state
     Cam.getState(), // (bool) cam state
-    NA, // (bool) rwState // ! not sure
+    RCW.getState(), // (bool) rwState // ! not sure
     Time.currentTimeSec, // on time in secs
-    Time.launchTime  / 1000000.0, // Converting Micro -> Seconds
+    Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Converting Micro -> Seconds
     Baro.pressure, // imu temp
-    Gyro.temperature, // imu temp
+    imu.temperature, // imu temp
     Baro.temperature,
-    NA,
-    NA,
-    NA,
-    0
+    NA, //GPS sats
+    NA, //Lat 
+    NA //lon
   );
 }
 
@@ -312,7 +317,7 @@ void gotoState(States target) { // ! we can add a FORCE parameter to bypass safe
     Cam.turnOn(); // ! WARNING: putting this here means the first few seconds of lauch isn't recorded!
     SDLogger.setFrequency(RATE_HIGH);
     Time.logLaunch();
-    if (!Gyro.biasComplete) TLM.printlnStr("WARNING: GYRO BIAS INCOMPLETE!");
+    if (!imu.biasComplete) TLM.printlnStr("WARNING: GYRO BIAS INCOMPLETE!");
     State = POWERED_ASCENT;
     TLM.printlnStr("STATE: POWER ASCENT");
     return;

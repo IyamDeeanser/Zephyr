@@ -11,6 +11,7 @@ class Telemetry {
             vec3 accel,
             vec3 gyro,
             float altitude,
+            float positionX,
             float rwValue,
             float batteryVoltage,
             const int & systemState,
@@ -23,8 +24,7 @@ class Telemetry {
             float baroTemp,
             float GPSSats,
             float latitude,
-            float longitude,
-            bool RWState
+            float longitude
         );
         
         void begin();

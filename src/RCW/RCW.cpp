@@ -30,3 +30,11 @@ void ReactionWheel::off(){
   analogWrite(outPin1, 0);
   analogWrite(outPin2, 0);
 }
+
+bool ReactionWheel::getState() const {
+    return state;
+}
+
+bool ReactionWheel::getValue() const {
+    return wheelOutput;
+}

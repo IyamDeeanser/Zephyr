@@ -7,14 +7,18 @@ class ReactionWheel {
 private:
     const int outPin1 = 5;
     const int outPin2 = 11;
-public:
+    bool state = 0;
     float wheelOutput;
+public:
 
     ReactionWheel();
 
     void writeWheelOutput(float pidXOut);
 
     void off();
+
+    bool getState() const;
+    bool getValue() const;
 };
 
 #endif
