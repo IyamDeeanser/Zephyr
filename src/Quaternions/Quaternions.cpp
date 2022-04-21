@@ -13,11 +13,11 @@ void Quaternion::begin()
 void Quaternion::accelOri(float xAccel, float yAccel, float zAccel)
 {
     // apply trigonometry to get the pitch and yaw:
-    float pitch = atan(xAxis/sqrt(pow(yAxis,2) + pow(zAxis,2)));
-    float roll = atan(yAxis/sqrt(pow(xAxis,2) + pow(zAxis,2)));
+    accelPitch = atan(zAccel/sqrt(pow(yAccel,2) + pow(xAccel,2)));
+    accelYaw = atan(yAccel/sqrt(pow(zAccel,2) + pow(xAccel,2)));
     //convert radians into degrees
-    pitch = pitch * (180.0/PI);
-    roll = roll * (180.0/PI) ;
+    accelPitch = accelPitch * (180.0/PI);
+    accelYaw = accelYaw * (180.0/PI) ;
 }
 
 void Quaternion::update(IMU& gyro, Timer& time)
@@ -50,7 +50,7 @@ void Quaternion::update(IMU& gyro, Timer& time)
     pitch = (-asin(2 * pre_q[1] * pre_q[3] + 2 * pre_q[0] * pre_q[2]));
     roll = (atan2(2 * pre_q[2] * pre_q[3] - 2 * pre_q[0] * pre_q[1], 2 * pre_q[0] * pre_q[0] + 2 * pre_q[3] * pre_q[3] - 1));
     //convert from radians to degrees
-    yaw = yaw * (180 / pi);// - yawOffset;
-    pitch = pitch * (180 / pi);// - pitchOffset;
+    yaw = yaw * (180 / pi) - accelYaw;
+    pitch = pitch * (180 / pi) - accelPitch;
     roll = roll * (180 / pi);
 }

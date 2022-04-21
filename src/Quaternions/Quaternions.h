@@ -18,7 +18,7 @@ private:
     float q[4]; //this is the current derivative
     float i_q[4]; //orientation of earth relative to sensor/the starting quaternion
     float pre_q[4]; //this is the previous quaternion derivative
-    
+
 public:
     float yaw, pitch, roll;
     float accelYaw, accelPitch;
