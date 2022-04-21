@@ -21,8 +21,9 @@ private:
     
 public:
     float yaw, pitch, roll;
+    float accelYaw, accelPitch;
     void begin();
-    void accelYPR();
+    void accelOri(float xAccel, float yAccel, float zAccel);
     void update(IMU& gyro, Timer& time);
 };
 
