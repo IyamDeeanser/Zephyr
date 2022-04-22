@@ -2,6 +2,7 @@
 
 void Camera::initialize() {
     pinMode(CAMERA_PIN, OUTPUT);
+    digitalWrite(CAMERA_PIN, LOW);
 }
 
 void Camera::turnOn() {
