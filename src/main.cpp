@@ -33,9 +33,12 @@
 #include "Quaternions/Quaternions.h"
 #include "PID/PID.h"
 #include "RCW/RCW.h"
+#include "LED/LED.h"
+
+#define Serial SerialUSB
+
 // ! Accel Orentation
 // todo test & add libs above
-#define Serial SerialUSB
 // Global Objects
 States State;
 Timer Time;
@@ -52,9 +55,10 @@ GPS_Stats GPS; // ! NOT WORKING
 Quaternion Quat;
 PID Roll;
 ReactionWheel RCW;
+LED led(18, 17, 16);
 
 // Global Constants
-const float G = 9.80;
+const float G = 9.80665;
 
 // Prototype Functions
 void logData();
@@ -64,6 +68,8 @@ void gotoState(States target);
 
 // setup loop
 void setup() {
+  led.colour(led.purple);
+
   delay(1000);
   
   // Telemetry
@@ -75,66 +81,78 @@ void setup() {
   if(!SD_Card::begin(15)) {
     TLM.printlnStr("SD CARD FAILED TO INITIALIZE!");
     Serial.println("SD CARD FAILED TO INITIALIZE!");
+    State = AVI_ERROR;
   }
-
-  // Files
-  String flightFolderPath = SD_Card::createNewDir();
-  logFile.begin("data.csv", flightFolderPath);
-  logFile.println("Ori x (deg),Ori y (deg),Ori z (deg),Accel x (m/s^2),Accel y (m/s^2),Accel z (m/s^2),AccelHiG x (m/s^2),AccelHiG y (m/s^2),AccelHiG z (m/s^2),Gyro x (deg/s),Gyro y (deg/s),Gyro z (deg/s),Baro Alt AGL (m),GPS Altitude (m),RW Value,Voltage,State,Cam State,RW State,On Time (sec),Flight Time (sec),Pressure (hPa),IMU Temp (C),Baro Temp (C),GPS Sats,Latitude,Longitude");
-  // ^ printing header log file
-  settingsFile.begin("settings.txt", flightFolderPath);
-  
-  // camera
-  Cam.initialize();
   
   // Accelerometer
   if(!Accel.begin()) {
     TLM.printlnStr("HIGH-G ACCELEROMETER FAILED TO INITIALIZE!");
     Serial.println("HIGH-G ACCELEROMETER FAILED TO INITIALIZE!");
+    State = AVI_ERROR;
   }
 
   // Barometer 
   if(!Baro.begin()) {
     TLM.printlnStr("BAROMETER FAILED TO INITIALIZE!");
     Serial.println("BAROMETER FAILED TO INITIALIZE!");
+    State = AVI_ERROR;
   }
 
   // Inertial Measurement Unit
   if(!imu.begin()) {
     TLM.printlnStr("IMU FAILED TO INITIALIZE!");
     Serial.println("IMU FAILED TO INITIALIZE!");
+    State = AVI_ERROR;
   }
 
-  // Quaternions
-  Quat.begin();
-
-  // Coroutines
-  SDLogger.begin(logData);
-  TLMSender.begin(sendData);
-  SDLogger.pause(); // SD Card starts logging at Launch Ready
-
   // GPS
-  GPS.begin();
+  //GPS.begin();
 
-  TLM.printlnStr("SETUP COMPLETE"); 
+  if(State != AVI_ERROR){
+    // camera
+    Cam.initialize();
+
+    // Quaternions
+    Quat.begin();
+
+    // // Files
+    String flightFolderPath = SD_Card::createNewDir();
+    logFile.begin("data.csv", flightFolderPath);
+    logFile.println("Ori x (deg),Ori y (deg),Ori z (deg),Accel x (m/s^2),Accel y (m/s^2),Accel z (m/s^2),AccelHiG x (m/s^2),AccelHiG y (m/s^2),AccelHiG z (m/s^2),Gyro x (deg/s),Gyro y (deg/s),Gyro z (deg/s),Baro Alt AGL (m),GPS Altitude (m),RW Value,Voltage,State,Cam State,RW State,On Time (sec),Flight Time (sec),Pressure (hPa),IMU Temp (C),Baro Temp (C),GPS Sats,Latitude,Longitude");
+    // ^ printing header log file
+    settingsFile.begin("settings.txt", flightFolderPath);
+
+    // Coroutines
+    SDLogger.begin(logData);
+    TLMSender.begin(sendData);
+    SDLogger.pause(); // SD Card starts logging at Launch Ready
+
+    TLM.printlnStr("SETUP COMPLETE"); 
+    Serial.println("SETUP COMPLETE");
+  }
 }
 
 void loop() 
 {
   // updates objects
   Time.update();
-  SDLogger.update();
-  TLMSender.update();
-  GPS.update();
-  Baro.update();
-  Accel.update();
-  imu.update();
-  checkForCommands();
-  if(State >= POWERED_ASCENT) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
+
+  if(State != AVI_ERROR){
+    SDLogger.update();
+    TLMSender.update();
+    //GPS.update();
+    Baro.update();
+    Accel.update();
+    imu.update();
+    checkForCommands();
+    if(State >= POWERED_ASCENT && State != MISSION_COMPLETE) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
+  }
 
   // todo SELECT STATE GIVEN CONDITION (in case device restarts mid flight)
   switch(State) {
     case GROUND_IDLE:
+      led.flash(led.yellow, led.green, 1000000, 50000, Time.currentTimeMicro, 13, 1100);
+
       // !! Brownout (Ghetto?)
       const static float startupAltitude = Baro.altitude;
       if(Baro.altitude > startupAltitude + 50) gotoState(POWERED_ASCENT);
@@ -143,6 +161,8 @@ void loop()
       break;
 
     case LAUNCH_READY: 
+      led.flash(led.yellow, led.green, 1000000, 50000, Time.currentTimeMicro, 13, 1100);
+
       imu.getGyroBias(); // ! NOT TESTED!
       if(abs(Accel.data.x) > 13) { // alternative, Accel.getAccelMag();
         gotoState(POWERED_ASCENT);
@@ -150,12 +170,16 @@ void loop()
       break;
 
     case POWERED_ASCENT:
+      led.party(Time.currentTimeMicro, 13, 1000);
+
       if(Accel.getAccelMag() < 2 * G) { 
         gotoState(UNPOWERED_ASCENT);
       }
       break;
 
     case UNPOWERED_ASCENT:
+      led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
+
       // ? Check for < 16g??
       if(Accel.getAccelMag() < 4 * G) { // ? Is there a possiblity that it never reaches < 4?
         gotoState(SEPARATION);
@@ -163,12 +187,16 @@ void loop()
       break;
     
     case SEPARATION:
+      led.flash(led.white, led.blue, 350000, 40000, Time.currentTimeMicro, 13, 1100);
+
       if(Baro.rawAltitude < Baro.apogee && millis() >= Baro.apogeeTime + 1000) { // @ raw Alt is used here in case alt isn't set.
         gotoState(PARACHUTE_DESCENT);
       }
       break;
 
     case PARACHUTE_DESCENT:
+      led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
+
       static unsigned int parachuteDescentStartTime = millis();
       // todo add manual switcdh to roll control
       if (millis() > parachuteDescentStartTime + 5000)  { // ! delay is arbritrary
@@ -178,11 +206,13 @@ void loop()
       break;
 
     case ROLL_CONTROL:
+      led.flash(led.yellow, led.green, 600000, 45000, Time.currentTimeMicro, 13, 1100);
+
       // ! PID & RCW not done yet
       // ! we need a bool that tells us if we are controlling roll manually 
       // todo add manual roll
       if(Baro.altitude <= 50) {
-        gotoState(LANDING); // ! maybe call Baro.alt -> Baro.RELATIVEALT
+        gotoState(LANDING_DETECT); // ! maybe call Baro.alt -> Baro.RELATIVEALT
       }
 
       Roll.update(Time,imu);
@@ -190,7 +220,9 @@ void loop()
       
       break;
 
-    case LANDING: // ! untested
+    case LANDING_DETECT: // ! untested
+      led.flash(led.blue, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1380);
+
       static int loggedAlt = Baro.altitude;
       static long loggedAltTime = millis();
       
@@ -209,18 +241,25 @@ void loop()
       break;
 
     case MISSION_COMPLETE:
+      led.flash(led.red, led.white, 500000, 50000, Time.currentTimeMicro, 13, 1200);
+
+      // ! This does nothing
+      break;
+
+    case AVI_ERROR:
+      led.flash(led.red, led.yellow, 500000, 100000, Time.currentTimeMicro, 13, 900);
       // ! This does nothing
       break;
 
     default:
       TLM.printlnStr("STATE MACHINE ERROR: Sat is in an unrecognized state!");
     
-    if(State > LAUNCH_READY && Time.launchTime != 0 && Time.currentTimeMicro - Time.launchTime > 100000 * 60 * 5) { // ! potentially dangerious code
-      State = ABORT; // equibilent of mission complete, but if this every happens we know that something is wrong.
-      logFile.eject();
-      // settingsFile.eject();
-      TLMSender.setFrequency(LOW);
-    }
+    // if(State > LAUNCH_READY && Time.launchTime != 0 && Time.currentTimeMicro - Time.launchTime > 100000 * 60 * 5) { // ! potentially dangerious code
+    //   State = ABORT; // equibilent of mission complete, but if this every happens we know that something is wrong.
+    //   logFile.eject();
+    //   // settingsFile.eject();
+    //   TLMSender.setFrequency(LOW);
+    // }
   }  
 }
 
@@ -360,9 +399,9 @@ void gotoState(States target) { // ! we can add a FORCE parameter to bypass safe
     TLM.printlnStr("STATE: ROLL CONTROL");
     return;
 
-  case LANDING:
+  case LANDING_DETECT:
     SDLogger.setFrequency(RATE_MEDIUM);
-    State = LANDING;
+    State = LANDING_DETECT;
     TLM.printlnStr("STATE: LANDING");
     return;
 
@@ -375,8 +414,8 @@ void gotoState(States target) { // ! we can add a FORCE parameter to bypass safe
       TLM.printlnStr("MISSION COMPLETE!");
     return;
 
-  case ABORT:
-    // ! this means something bad happened do we need this?
+  case AVI_ERROR:
+    
     return;
 
   default:
