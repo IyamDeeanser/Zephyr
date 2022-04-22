@@ -35,7 +35,7 @@
 #include "RCW/RCW.h"
 // ! Accel Orentation
 // todo test & add libs above
-
+#define Serial SerialUSB
 // Global Objects
 States State;
 Timer Time;
@@ -64,12 +64,18 @@ void gotoState(States target);
 
 // setup loop
 void setup() {
+  delay(1000);
+  
   // Telemetry
   TLM.begin();
+
+  Serial.begin(9600);
   
   // SD card
-  if(!SD_Card::begin(15))
+  if(!SD_Card::begin(15)) {
     TLM.printlnStr("SD CARD FAILED TO INITIALIZE!");
+    Serial.println("SD CARD FAILED TO INITIALIZE!");
+  }
 
   // Files
   String flightFolderPath = SD_Card::createNewDir();
@@ -82,16 +88,22 @@ void setup() {
   Cam.initialize();
   
   // Accelerometer
-  if(!Accel.begin())
-    TLM.printlnStr("HIGH-G ACCEROMETER FAILED TO INITIALIZE!");
+  if(!Accel.begin()) {
+    TLM.printlnStr("HIGH-G ACCELEROMETER FAILED TO INITIALIZE!");
+    Serial.println("HIGH-G ACCELEROMETER FAILED TO INITIALIZE!");
+  }
 
   // Barometer 
-  if(!Baro.begin())
+  if(!Baro.begin()) {
     TLM.printlnStr("BAROMETER FAILED TO INITIALIZE!");
+    Serial.println("BAROMETER FAILED TO INITIALIZE!");
+  }
 
   // Inertial Measurement Unit
-  if(!imu.begin())
+  if(!imu.begin()) {
     TLM.printlnStr("IMU FAILED TO INITIALIZE!");
+    Serial.println("IMU FAILED TO INITIALIZE!");
+  }
 
   // Quaternions
   Quat.begin();
