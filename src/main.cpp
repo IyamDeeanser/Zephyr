@@ -223,7 +223,7 @@ void loop()
     case LANDING_DETECT: // ! untested
       led.flash(led.blue, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1380);
 
-      static int loggedAlt = Baro.altitude;
+      static float loggedAlt = Baro.altitude;
       static long loggedAltTime = millis();
       
       if (abs(loggedAlt - Baro.altitude) > 1) { // ! 1 might be to small
