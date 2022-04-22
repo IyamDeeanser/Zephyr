@@ -266,7 +266,9 @@ void sendData() { // ! not all data is here
 void checkForCommands() { // ! i might be paranoid but having unencrypted data means anyone w/ a yagi can intercept & send malicicous commands
   // Safeguards in code might peg us
   String Command = TLM.read();
-  if(Command == "GOTO LAUNCH READY") {
+  if(Command == "") return;
+
+  if(Command == "GTLR") {
     gotoState(LAUNCH_READY);
   }
   if(Command == "GOTO POWERED ASCENT") {

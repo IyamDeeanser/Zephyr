@@ -4,7 +4,7 @@
 BMP388_DEV bmp388;
 
 bool Barometer::begin() {
-    if (!bmp388.begin()) {
+    if (!bmp388.begin(0x76)) {
         return false;
     }
 
