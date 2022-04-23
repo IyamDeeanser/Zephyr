@@ -6,7 +6,7 @@
 class Barometer {
     public:
         float bias = 0;
-        float altitude;
+        float altitudeAGL;
         float rawAltitude;
         float temperature;
         float pressure;

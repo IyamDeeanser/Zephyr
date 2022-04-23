@@ -1,8 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <Arduino.h>
 #include "../Timer/Timer.h"
-#include "../IMU/IMU.h"
 
 class PID{
 private:
@@ -15,7 +15,7 @@ private:
 public:
   PID();
   float Output = 0;
-  void update(Timer time, IMU gyro);
+  void update(Timer time, float rollOri);
   void setSetpoint(float newPoint);
 };
 
