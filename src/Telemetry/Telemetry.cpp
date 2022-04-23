@@ -21,7 +21,7 @@ void Telemetry::transmit(vec3 ori, vec3 accel, vec3 gyro, float altitude, float 
     Serial1.print(batteryVoltage, 3);        Serial1.print(",");
     Serial1.print(systemState);              Serial1.print(",");
     Serial1.print(cameraState);              Serial1.print(",");
-    Serial1.print(reactionWheelState);                  Serial1.print(",");
+    Serial1.print(reactionWheelState);       Serial1.print(",");
     Serial1.print(onTimeSec, 3);             Serial1.print(",");
     Serial1.print(flightTimeSec, 3);         Serial1.print(",");
     Serial1.print(pressure, 3);              Serial1.print(",");

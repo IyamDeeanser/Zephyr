@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define RATE_HIGH 35
+#define RATE_HIGH 15
 #define RATE_MEDIUM 10
 #define RATE_LOW 1
 
