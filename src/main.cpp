@@ -51,7 +51,7 @@ Barometer Baro;
 IMU imu;
 Coroutine SDLogger;
 Coroutine TLMSender;
-GPS_Stats GPS; // ! NOT WORKING
+GPS_Variables GPSVar; 
 Quaternion Quat;
 PID RollPID;
 ReactionWheel RCW;
@@ -125,6 +125,9 @@ void setup() {
     TLMSender.begin(sendData);
     SDLogger.pause(); // SD Card starts logging at Launch Ready
 
+    //GPS Variables
+    GPSVar.GPSBegin();
+
     TLM.printlnStr("SETUP COMPLETE"); 
     Serial.println("SETUP COMPLETE");
   }
@@ -143,6 +146,7 @@ void loop()
     Baro.update();
     Accel.update();
     imu.update();
+    GPSVar.update();
 
     Command = TLM.read();
     if(State >= POWERED_ASCENT && State != MISSION_COMPLETE) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
@@ -345,7 +349,7 @@ void logData() {
     Accel.data,
     imu.bodyGyroDeg, // Gyro 
     Baro.altitudeAGL, // altitude
-    GPS.altitude, //Position from GPS
+    GPSVar.altitude, //Position from GPS
     RCW.getValue(), // RCW value
     Voltage::getVoltage(), // batt voltage
     State, // (int) state
@@ -356,9 +360,9 @@ void logData() {
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,
-    GPS.numSatellites, //GPS sats
-    GPS.latitude, //Lat 
-    GPS.longitude //lon
+    GPSVar.numSatellites, //GPS sats
+    GPSVar.latitude, //Lat 
+    GPSVar.longitude //lon
   );
 }
 
@@ -368,7 +372,7 @@ void sendData() { // ! not all data is here
     (Accel.getAccelMag() > 15 * G) ? Accel.data : imu.bodyAccel, // acceleration
     imu.bodyGyroDeg, // Gyro 
     Baro.altitudeAGL, // altitude
-    GPS.altitude, //GPS altitude
+    GPSVar.altitude, //GPS altitude
     RCW.getValue(), // RCW value
     Voltage::getVoltage(), // batt voltage
     State, // (int) state
@@ -379,8 +383,8 @@ void sendData() { // ! not all data is here
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,
-    GPS.numSatellites, //GPS sats
-    GPS.latitude, //Lat 
-    GPS.longitude //lon
+    GPSVar.numSatellites, //GPS sats
+    GPSVar.latitude, //Lat 
+    GPSVar.longitude //lon
   );
 }
