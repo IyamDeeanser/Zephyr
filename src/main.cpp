@@ -345,7 +345,7 @@ void logData() {
     Accel.data,
     imu.bodyGyroDeg, // Gyro 
     Baro.altitudeAGL, // altitude
-    NA, //Position from GPS
+    GPS.altitude, //Position from GPS
     RCW.getValue(), // RCW value
     Voltage::getVoltage(), // batt voltage
     State, // (int) state
@@ -356,9 +356,9 @@ void logData() {
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,
-    NA, //GPS sats
-    NA, //Lat 
-    NA //lon
+    GPS.numSatellites, //GPS sats
+    GPS.latitude, //Lat 
+    GPS.longitude //lon
   );
 }
 
@@ -368,7 +368,7 @@ void sendData() { // ! not all data is here
     (Accel.getAccelMag() > 15 * G) ? Accel.data : imu.bodyAccel, // acceleration
     imu.bodyGyroDeg, // Gyro 
     Baro.altitudeAGL, // altitude
-    NA, //GPS altitude
+    GPS.altitude, //GPS altitude
     RCW.getValue(), // RCW value
     Voltage::getVoltage(), // batt voltage
     State, // (int) state
@@ -379,8 +379,8 @@ void sendData() { // ! not all data is here
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,
-    NA, //GPS sats
-    NA, //Lat 
-    NA //lon
+    GPS.numSatellites, //GPS sats
+    GPS.latitude, //Lat 
+    GPS.longitude //lon
   );
 }

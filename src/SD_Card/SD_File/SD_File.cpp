@@ -79,8 +79,8 @@ void SD_File::logData(vec3 ori, vec3 accel, vec3 accelHG, vec3 gyro, float altit
     Serial1.print(pressure, 3);              Serial1.print(",");
     Serial1.print(imuTemp, 3);               Serial1.print(",");
     Serial1.print(baroTemp, 3);              Serial1.print(",");
-    Serial1.print(GPSSats, 3);               Serial1.print(",");
-    Serial1.print(latitude, 3);              Serial1.print(",");
-    Serial1.println(longitude, 3);
+    Serial1.print(GPSSats);                  Serial1.print(",");
+    Serial1.print(latitude, 4);              Serial1.print(",");
+    Serial1.println(longitude, 4);
     // ! IF NOT LOGGING FAST ENOUGH use Serial1.flush() to push all chars out before moving on! (blocking function)
 }
