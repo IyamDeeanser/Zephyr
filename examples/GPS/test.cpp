@@ -1,32 +1,34 @@
-#include "GPS.cpp"
-#include "GPS Variables.cpp"
-#include <Adafruit_GPS.h>
+//        ⣠⣴⣶⣿⠿⢿⣶⣶⣦⣄⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⣼⡿⠋⠁⠀⠀⠀⢀⣈⠙⢿⣷⡄⠀⠀
+// ⠀⠀⠀⠀⢸⣿⠁⠀⢀⣴⣿⠿⠿⠿⠿⠿⢿⣷⣄⠀
+// ⠀⢀⣀⣠⣾⣿⡇⠀⣾⣿⡄⠀⠀⠀⠀⠀⠀⠀⠹⣧
+// ⣾⡿⠉⠉⣿⠀⡇⠀⠸⣿⡌⠓⠶⠤⣤⡤⠶⢚⣻⡟
+// ⣿⣧⠖⠒⣿⡄⡇⠀⠀⠙⢿⣷⣶⣶⣶⣶⣶⢿⣿⠀
+// ⣿⡇⠀⠀⣿⡇⢰⠀⠀⠀⠀⠈⠉⠉⠉⠁⠀⠀⣿⠀
+// ⣿⡇⠀⠀⣿⡇⠈⡄⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣿⠀
+// ⣿⣷⠀⠀⣿⡇⠀⠘⠦⣄⣀⣀⣀⣀⣀⡤⠊⠀⣿⠀
+// ⢿⣿⣤⣀⣿⡇⠀⠀⠀⢀⣀⣉⡉⠁⣀⡀⠀⣾⡟⠀
+// ⠀⠉⠛⠛⣿⡇⠀⠀⠀⠀⣿⡟⣿⡟⠋⠀⢰⣿⠃⠀
+// ⠀⠀⠀⠀⣿⣧⠀⠀⠀⢀⣿⠃⣿⣇⠀⢀⣸⡯⠀⠀
+// ⠀⠀⠀  ⠹⢿⣶⣶⣶⠿⠃⠀⠈⠛⠛⠛⠛
+//HELP MEEE HELP
 
-Adafruit_GPS ZephyrGPS;
-GPSVariables GPSVar;
+//Test File Version 2
+    //With Global Variables 
 
-void setup(){
-    GPSBegin(ZephyrGPS);
+#include "GPS.h"
+
+//Variable storage object
+GPS_Variables GPSVar;
+
+void setup()
+{
+    SerialUSB.begin(115200);
+    GPSVar.GPSBegin();
 }
 
 void loop(){
-    GPSUpdate(ZephyrGPS, GPSVar);
-    // SerialUSB.print("-----------------\n RotaSat GPS Testing: \n -----------------\n");
-    // SerialUSB.print("Location: \n -----------------\n");
-    // SerialUSB.print("Latitude: ");
-    // SerialUSB.print(ZephyrGPS.generalLat);
-    // SerialUSB.print('\n');
-    // SerialUSB.print("Longitude: ");
-    // SerialUSB.print(ZephyrGPS.generalLon);
-    // SerialUSB.print('\n');
-    // SerialUSB.print("-----------------\nAltitude: ");
-    // SerialUSB.print(ZephyrGPS.altitude); SerialUSB.print(" m");
-    // SerialUSB.print("\nSpeed: ");
-    // SerialUSB.print(ZephyrGPS.speed); SerialUSB.print(" knots");
-    // SerialUSB.print("\nAngle: ");
-    // SerialUSB.print(ZephyrGPS.angle); SerialUSB.print(" degrees");
-    // SerialUSB.print("\nNumber of Satellites Connected: ");
-    // SerialUSB.print(ZephyrGPS.numSatellites);
-    // SerialUSB.print('\n');
-    // delay(2000);
+    GPSVar.GPSUpdate();
+    SerialUSB.println(GPSVar.latitude);
+    SerialUSB.println(GPSVar.longitude);
 }
