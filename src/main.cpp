@@ -107,7 +107,7 @@ void setup() {
   //GPS.begin();
 
   //GPS Variables
-  GPSVar.GPSBegin();
+  GPSVar.GPSBegin(); // ! this should return a bool
 
   if(State != AVI_ERROR){
     // camera
