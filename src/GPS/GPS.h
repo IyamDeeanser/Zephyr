@@ -30,8 +30,9 @@ struct GPS_Variables{
         int fixQuality;
 
     GPS_Variables();
-    void GPSBegin();
+    bool GPSBegin();
     void GPSUpdate();
 };
 
+#endif
 #endif
