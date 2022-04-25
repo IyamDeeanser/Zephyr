@@ -27,8 +27,11 @@ GPS_Variables::GPS_Variables(){
     fixQuality = 0;
 }
 
-void GPS_Variables::GPSBegin(){
-    GPS.begin(0x10); //Change address if needed depending on where GPS is
+bool GPS_Variables::GPSBegin(){
+
+    if (!GPS.begin(0x10)){
+        return false;
+    } 
 
     //turns on RMC (recommended minimum) and GGA (fix data) including altitude
     GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -39,6 +42,8 @@ void GPS_Variables::GPSBegin(){
     GPS.sendCommand(PGCMD_ANTENNA);
 
     delay(1000);
+
+    return true;
 }
 
 void GPS_Variables::GPSUpdate(){
