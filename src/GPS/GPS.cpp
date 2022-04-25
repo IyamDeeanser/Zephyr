@@ -1,53 +1,82 @@
 #include "GPS.h"
 
-//When the main program makes a GPS_Stats object (this will need to be done in order to to use the functions), 
-    //the object is created with all values initialized to 0
-GPS_Stats::GPS_Stats(){
+//Global variables :((
+// Connect to the ZephyrGPS on the hardware I2C port
+Adafruit_GPS GPS(&Wire);
 
-    //Initializes everything to 0
-        //If GPS not responding then all variables will be equal to zero, and it will be obvious there is a problem
+//A timer to make sure data isn't jamming and updating properly
+uint32_t timer = millis();
+
+GPS_Variables::GPS_Variables(){
+    //Latitude and Longitude Numbers 
     latitude = 0.0;
     longitude = 0.0;
+
+    //Cardingal directions in N,E,S,W for latitude and longitude
+    latDir = 'N';
+    lonDir = 'W';
+
+    //Other variables
     altitude = 0.0;
     speed = 0.0;
-    angle= 0.0;
+    angle = 0.0;
     numSatellites = 0;
+
+    //Fix info
+    fix = 0;
+    fixQuality = 0;
 }
 
-//Sends commands and does standard GPS setup
-void GPS_Stats::begin(){
-    ZephyrGPS.begin(0x10); //Change address if needed
+void GPS_Variables::GPSBegin(){
+    GPS.begin(0x10); //Change address if needed depending on where GPS is
 
     //turns on RMC (recommended minimum) and GGA (fix data) including altitude
-    ZephyrGPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+    GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
   
-    ZephyrGPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
+    GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
 
     // Request updates on antenna status 
-    ZephyrGPS.sendCommand(PGCMD_ANTENNA); 
+    GPS.sendCommand(PGCMD_ANTENNA);
 
-    // delay(1000); // ! MAY BE A PROBLEM
-    
-    // Ask for firmware version
-    ZephyrGPS.println(PMTK_Q_RELEASE);
+    delay(1000);
 }
 
-//Updates all public variables in the GPS_Stats object with new information and makes sure GPS is receieving proper updates
-void GPS_Stats::update(){
+void GPS_Variables::GPSUpdate(){
 
     //Reads NMEA character by character 
-    char c = ZephyrGPS.read();
+    char c = GPS.read();
+
+    if (ZephyrGPSECHO){
+        if (c) Serial.print(c);
+    }
     // if a sentence is received, we can check the checksum, parse it...
-    if (ZephyrGPS.newNMEAreceived()) {
+    if (GPS.newNMEAreceived()) {
         // we can fail to parse a sentence in which case we should just wait for another
-        if (!ZephyrGPS.parse(ZephyrGPS.lastNMEA())) {return;} 
+        if (!GPS.parse(GPS.lastNMEA())) {return;} 
     }
 
-    //Updates each variable with new information
-    latitude = ZephyrGPS.latitude;
-    longitude = ZephyrGPS.longitude;
-    altitude = ZephyrGPS.altitude;
-    speed = ZephyrGPS.speed;
-    angle= ZephyrGPS.angle;
-    numSatellites = ZephyrGPS.satellites;
+// approximately every 2 seconds or so, update the current stats
+  if (millis() - timer > 2000) {
+    timer = millis(); // reset the timer
+    fix = (int)GPS.fix;
+    fixQuality = (int)GPS.fixquality;
+    if (GPS.fix) {
+        latitude = GPS.latitude;
+        latDir = GPS.lat;
+
+        longitude = GPS.longitude;
+        lonDir = GPS.lon;
+
+        speed = GPS.speed;
+
+        angle = GPS.angle;
+
+        altitude = (GPS.altitude)/100.0;
+
+        numSatellites = (int)GPS.satellites;
+    }
+    else{
+        SerialUSB.print("Ew no fix again. :(");
+    }
+  }
 }

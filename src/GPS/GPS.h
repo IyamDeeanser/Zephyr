@@ -9,24 +9,29 @@
 // Set ZephyrGPSECHO to 'false' to turn off echoing the ZephyrGPS data to the Serial console
 #define ZephyrGPSECHO false
 
-class GPS_Stats{
+struct GPS_Variables{
 
-public:
-    //The GPS object
-    Adafruit_GPS ZephyrGPS;
+    //Latitude and Longitude Numbers 
+        float latitude;
+        float longitude;
 
-    //Value variables, public for simplicity 
-    float latitude;
-    float longitude;
-    float altitude;
-    float speed;
-    float angle;
-    int numSatellites;
+        //Cardingal directions in N,E,S,W for latitude and longitude
+        char latDir;
+        char lonDir;
 
-    //Constructor and update function declaration
-    GPS_Stats();
-    void begin();
-    void update();
+        //Other variables
+        float altitude;
+        float speed;
+        float angle;
+        int numSatellites;
+
+        //Fix info
+        int fix;
+        int fixQuality;
+
+    GPS_Variables();
+    void GPSBegin();
+    void GPSUpdate();
 };
 
 #endif

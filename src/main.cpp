@@ -106,6 +106,9 @@ void setup() {
   // GPS
   //GPS.begin();
 
+  //GPS Variables
+  GPSVar.GPSBegin();
+
   if(State != AVI_ERROR){
     // camera
     Cam.initialize();
@@ -125,9 +128,6 @@ void setup() {
     TLMSender.begin(sendData);
     SDLogger.pause(); // SD Card starts logging at Launch Ready
 
-    //GPS Variables
-    GPSVar.GPSBegin();
-
     TLM.printlnStr("SETUP COMPLETE"); 
     Serial.println("SETUP COMPLETE");
   }
@@ -146,7 +146,7 @@ void loop()
     Baro.update();
     Accel.update();
     imu.update();
-    GPSVar.update();
+    GPSVar.GPSUpdate();
 
     Command = TLM.read();
     if(State >= POWERED_ASCENT && State != MISSION_COMPLETE) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
