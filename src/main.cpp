@@ -103,11 +103,12 @@ void setup() {
     State = AVI_ERROR;
   }
 
-  // GPS
-  //GPS.begin();
-
-  //GPS Variables
-  GPSVar.GPSBegin(); // ! this should return a bool
+  //GPS
+  if(!GPSVar.GPSBegin()) {
+    TLM.printlnStr("GPS FAILED TO INITIALIZE!");
+    Serial.println("GPS FAILED TO INITIALIZE!");
+    State = AVI_ERROR;
+  }
 
   if(State != AVI_ERROR){
     // camera
@@ -168,11 +169,10 @@ void loop()
       if(Command == "EN"){ //Enable launch command
         Command = "";
         SDLogger.resume(); // starts logging data 
-        TLMSender.setFrequency(RATE_HIGH);
+        TLMSender.setFrequency(TLM_RATE_HIGH);
         imu.getGyroBias(); // ! NOT TESTED!
 
         State = LAUNCH_READY;
-        TLM.printlnStr("STATE: LAUNCH READY");
       }
 
       if(Command == "CL") {
@@ -196,11 +196,10 @@ void loop()
       if(abs(Accel.data.x) >= 13 || Command == "AS") {
         Command = "";
         Cam.turnOn(); //For safety
-        SDLogger.setFrequency(RATE_HIGH);
+        SDLogger.setFrequency(TLM_RATE_HIGH);
         Time.logLaunch();
-        if (!imu.biasComplete) TLM.printlnStr("WARNING: GYRO BIAS INCOMPLETE!");
+        if (!imu.biasComplete)
         State = POWERED_ASCENT;
-        TLM.printlnStr("STATE: POWERED ASCENT");
       }
 
       if(Command == "CL") {
@@ -213,11 +212,6 @@ void loop()
         Cam.turnOn();
       }
 
-      if(Command == "CH") {
-        Command = "";
-        //imu.getGyroBias wont work more than once right now so we cant do this 
-      }
-
       break;
 
     case POWERED_ASCENT:
@@ -225,9 +219,8 @@ void loop()
 
       if(abs(Accel.data.x) <= 2 || Command == "AS") {
         Command = "";
-        SDLogger.setFrequency(RATE_MEDIUM);
-        State = UNPOWERED_ASCENT;
-        TLM.printlnStr("STATE: UNPOWERED ASCENT");
+        State = PARACHUTE_DESCENT; //! THIS IS FOR DRONE FLIGHT
+        //State = UNPOWERED_ASCENT; //! THIS IS FOR ROCKET FLIGHT
       }
       break;
 
@@ -237,7 +230,6 @@ void loop()
       if(Accel.getAccelMag() >= 5 || Command == "AS") {
         Command = "";
         State = SEPARATION;
-        TLM.printlnStr("STATE: SEPARATION");
       }
       break;
     
@@ -251,10 +243,8 @@ void loop()
 
       if((millis() - Baro.apogeeTime) >= 500 || Command == "AS") {
         Command = "";
-        SDLogger.setFrequency(RATE_HIGH);
+        SDLogger.setFrequency(SD_RATE_HIGH);
         State = PARACHUTE_DESCENT;
-        TLM.printlnStr("APOGEE REACHED! Apogee: " + String(Baro.apogee));
-        TLM.printlnStr("STATE: PARACHUTE DESCENT");
       }
 
       break;
@@ -267,7 +257,6 @@ void loop()
       if (millis() > parachuteDescentStartTime + 10000 || Command == "AS") {
         Command = "";
         State = ROLL_CONTROL;
-        TLM.printlnStr("STATE: ROLL CONTROL");
       }
 
       break;
@@ -283,11 +272,10 @@ void loop()
         RollPID.setSetpoint(90);
       }
 
-      if(Baro.altitudeAGL <= 50 || Command == "AS") {
+      if(Baro.altitudeAGL <= 30 || Command == "AS") {
         Command = "";
-        SDLogger.setFrequency(RATE_MEDIUM);
+        SDLogger.setFrequency(SD_RATE_MEDIUM);
         State = LANDING_DETECT;
-        TLM.printlnStr("STATE: LANDING");
       }
       
       break;
@@ -302,7 +290,7 @@ void loop()
         loggedAlt = Baro.altitudeAGL;
         loggedAltTime = millis();
       } else if (millis() - loggedAltTime > 5000) {
-        TLMSender.setFrequency(RATE_LOW);
+        TLMSender.setFrequency(TLM_RATE_LOW);
         logFile.eject();
         State = MISSION_COMPLETE;
         TLM.printlnStr("MISSION COMPLETE!");
@@ -311,7 +299,7 @@ void loop()
       //If gyros are all below 0.1 rad/s, we have landed
       if(((abs(imu.bodyGyroRad.x) < 0.1) && (abs(imu.bodyGyroRad.y) < 0.1) && (abs(imu.bodyGyroRad.z) < 0.1)) || Command == "AS") {
         Command = "";
-        TLMSender.setFrequency(RATE_LOW);
+        TLMSender.setFrequency(TLM_RATE_LOW);
         logFile.eject();
         State = MISSION_COMPLETE;
         TLM.printlnStr("MISSION COMPLETE!");
@@ -320,7 +308,7 @@ void loop()
       break;
 
     case MISSION_COMPLETE:
-      led.flash(led.red, led.white, 500000, 50000, Time.currentTimeMicro, 13, 1200);
+      led.flash(led.red, led.white, 500000, 50000, Time.currentTimeMicro, 13, 4000);
       
       static unsigned int landingTime = millis();
       if((millis() - landingTime) >= 15000){ //leave 15 second delay before shutting camera off
@@ -335,7 +323,7 @@ void loop()
       break;
 
     default:
-      TLM.printlnStr("STATE MACHINE ERROR: Sat is in an unrecognized state!");
+      break;
   }  
 }
 

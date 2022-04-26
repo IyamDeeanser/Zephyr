@@ -3,9 +3,13 @@
 
 #include <Arduino.h>
 
-#define RATE_HIGH 15
-#define RATE_MEDIUM 10
-#define RATE_LOW 1
+#define TLM_RATE_HIGH 15
+#define TLM_RATE_MEDIUM 10
+#define TLM_RATE_LOW 1
+
+#define SD_RATE_HIGH 50
+#define SD_RATE_MEDIUM 25
+#define SD_RATE_LOW 1
 
 class Coroutine {
 private:

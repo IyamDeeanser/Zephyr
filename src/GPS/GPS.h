@@ -35,4 +35,3 @@ struct GPS_Variables{
 };
 
 #endif
-#endif
