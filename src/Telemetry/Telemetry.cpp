@@ -40,7 +40,7 @@ void Telemetry::printlnStr(const String & s) {
 // Theres a 'Seria.readString() function that does this better LOL
 String Telemetry::read() {
     static String result;
-    while (Serial1.available() > 0) {
+    while (Serial1.available()) {
         char c = Serial1.read();
         if(c == '<') {
             result = "";

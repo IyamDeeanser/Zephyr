@@ -131,6 +131,8 @@ void setup() {
 
     TLM.printlnStr("SETUP COMPLETE"); 
     Serial.println("SETUP COMPLETE");
+
+    State = GROUND_IDLE;
   }
 }
 
@@ -143,13 +145,12 @@ void loop()
   if(State != AVI_ERROR){
     SDLogger.update();
     TLMSender.update();
-    //GPS.update();
     Baro.update();
     Accel.update();
     imu.update();
     GPSVar.GPSUpdate();
-
     Command = TLM.read();
+    if(State == GROUND_IDLE || State == LAUNCH_READY) Quat.accelOri(imu.bodyAccel.x,imu.bodyAccel.y,imu.bodyAccel.z);
     if(State >= POWERED_ASCENT && State != MISSION_COMPLETE) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
   }
 
@@ -158,19 +159,12 @@ void loop()
     case GROUND_IDLE:
       led.flash(led.yellow, led.green, 1000000, 50000, Time.currentTimeMicro, 13, 1100);
 
-      // // !! Brownout (Ghetto?)
-      // const static float startupAltitude = Baro.altitude;
-      // if(Baro.altitude > startupAltitude + 50) gotoState(POWERED_ASCENT);
-      // if(Baro.rawAltitude < Baro.altitude - 50) gotoState(PARACHUTE_DESCENT); // ! may have bugs since many stages are skipped
-      // // @ Maybe auto Switch to ascent IF mag. of velocity > 10 m/s
-
       Baro.setAltitudeBias();
 
       if(Command == "EN"){ //Enable launch command
         Command = "";
         SDLogger.resume(); // starts logging data 
         TLMSender.setFrequency(TLM_RATE_HIGH);
-        imu.getGyroBias(); // ! NOT TESTED!
 
         State = LAUNCH_READY;
       }
@@ -188,12 +182,12 @@ void loop()
       break;
 
     case LAUNCH_READY: 
-      led.flash(led.yellow, led.green, 1000000, 50000, Time.currentTimeMicro, 13, 1100);
+      led.flash(led.blue, led.white, 1000000, 50000, Time.currentTimeMicro, 13, 1380);
 
       Baro.setAltitudeBias();
       imu.getGyroBias();
 
-      if(abs(Accel.data.x) >= 13 || Command == "AS") {
+      if(abs(imu.bodyAccel.x) >= 13 || Command == "AS") {
         Command = "";
         Cam.turnOn(); //For safety
         SDLogger.setFrequency(TLM_RATE_HIGH);
@@ -217,7 +211,7 @@ void loop()
     case POWERED_ASCENT:
       led.party(Time.currentTimeMicro, 13, 1000);
 
-      if(abs(Accel.data.x) <= 2 || Command == "AS") {
+      if(abs(imu.bodyAccel.x) <= 2 || Command == "AS") {
         Command = "";
         State = PARACHUTE_DESCENT; //! THIS IS FOR DRONE FLIGHT
         //State = UNPOWERED_ASCENT; //! THIS IS FOR ROCKET FLIGHT
@@ -227,7 +221,7 @@ void loop()
     case UNPOWERED_ASCENT:
       led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
 
-      if(Accel.getAccelMag() >= 5 || Command == "AS") {
+      if(abs(imu.bodyAccel.x) >= 5 || Command == "AS") {
         Command = "";
         State = SEPARATION;
       }
@@ -254,7 +248,7 @@ void loop()
 
       static unsigned int parachuteDescentStartTime = millis();
 
-      if (millis() > parachuteDescentStartTime + 10000 || Command == "AS") {
+      if (millis() >= (parachuteDescentStartTime + 10000)|| Command == "AS") {
         Command = "";
         State = ROLL_CONTROL;
       }
@@ -293,7 +287,6 @@ void loop()
         TLMSender.setFrequency(TLM_RATE_LOW);
         logFile.eject();
         State = MISSION_COMPLETE;
-        TLM.printlnStr("MISSION COMPLETE!");
       }
 
       //If gyros are all below 0.1 rad/s, we have landed
@@ -302,7 +295,6 @@ void loop()
         TLMSender.setFrequency(TLM_RATE_LOW);
         logFile.eject();
         State = MISSION_COMPLETE;
-        TLM.printlnStr("MISSION COMPLETE!");
       }
 
       break;
@@ -332,7 +324,7 @@ void loop()
 
 void logData() {
   logFile.logData(
-    vec3(Quat.roll, Quat.pitch, Quat.yaw), // orientation
+    (State == GROUND_IDLE || State == LAUNCH_READY) ? vec3(Quat.roll, Quat.accelPitch, Quat.accelYaw) : vec3(Quat.roll, Quat.pitch, Quat.yaw), // orientation
     imu.bodyAccel, // acceleration
     Accel.data,
     imu.bodyGyroDeg, // Gyro 
@@ -356,7 +348,7 @@ void logData() {
 
 void sendData() { // ! not all data is here
   TLM.transmit(
-    vec3(Quat.roll, Quat.pitch, Quat.yaw), // orientation 
+    (State == GROUND_IDLE || State == LAUNCH_READY) ? vec3(Quat.roll, Quat.accelPitch, Quat.accelYaw) : vec3(Quat.roll, Quat.pitch, Quat.yaw), // orientation 
     (Accel.getAccelMag() > 15 * G) ? Accel.data : imu.bodyAccel, // acceleration
     imu.bodyGyroDeg, // Gyro 
     Baro.altitudeAGL, // altitude
