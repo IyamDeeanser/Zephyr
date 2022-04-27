@@ -319,9 +319,6 @@ void loop()
   }  
 }
 
-// @ TEMP variable for unkonwn inputs
-#define NA 0
-
 void logData() {
   logFile.logData(
     (State == GROUND_IDLE || State == LAUNCH_READY) ? vec3(Quat.roll, Quat.accelPitch, Quat.accelYaw) : vec3(Quat.roll, Quat.pitch, Quat.yaw), // orientation
@@ -346,7 +343,7 @@ void logData() {
   );
 }
 
-void sendData() { // ! not all data is here
+void sendData() {
   TLM.transmit(
     (State == GROUND_IDLE || State == LAUNCH_READY) ? vec3(Quat.roll, Quat.accelPitch, Quat.accelYaw) : vec3(Quat.roll, Quat.pitch, Quat.yaw), // orientation 
     (Accel.getAccelMag() > 15 * G) ? Accel.data : imu.bodyAccel, // acceleration
