@@ -14,7 +14,7 @@ bool Accelerometer::begin(){
 
 void Accelerometer::update(){
     kxData = kxAccel.getAccelData();
-    data.set(kxData.xData,kxData.yData,kxData.zData);
+    data.set(kxData.xData * G,kxData.yData * G,kxData.zData * G);
 }
 
 float Accelerometer::getAccelMag() const {

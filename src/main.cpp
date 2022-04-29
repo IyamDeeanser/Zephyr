@@ -333,7 +333,7 @@ void logData() {
     Cam.getState(), // (bool) cam state
     RCW.getState(),
     Time.currentTimeSec, // on time in secs
-    Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Converting Micro -> Seconds
+    (State == GROUND_IDLE || State == LAUNCH_READY) ? 0 : Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Flight time is 0 until flight has started
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,
@@ -356,7 +356,7 @@ void sendData() {
     Cam.getState(), // (bool) cam state
     RCW.getState(), // (bool) rwState 
     Time.currentTimeSec, // on time in secs
-    Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Converting Micro -> Seconds
+    (State == GROUND_IDLE || State == LAUNCH_READY) ? 0 : Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Flight time is 0 until flight has started
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,

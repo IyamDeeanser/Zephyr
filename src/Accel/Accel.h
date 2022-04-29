@@ -9,6 +9,7 @@ class Accelerometer { // instance of class needs to be made as global object
 private:
     QwiicKX134 kxAccel;
     outputData kxData;
+    const float G = 9.80665;
 public:
     vec3 data; // access data
     bool begin(); // run ONCE in setup, returns false if failed to initalize

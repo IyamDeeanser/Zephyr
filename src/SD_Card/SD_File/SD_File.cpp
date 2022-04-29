@@ -54,7 +54,7 @@ void SD_File::eject() {
     canWrite = false;
 }
 
-void SD_File::logData(vec3 ori, vec3 accel, vec3 accelHG, vec3 gyro, float altitude, float rwValue, float batteryVoltage, const int & systemState, const bool & cameraState, bool reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude, float positionX) {
+void SD_File::logData(vec3 ori, vec3 accel, vec3 accelHG, vec3 gyro, float positionX, float altitude, float rwValue, float batteryVoltage, const int & systemState, const bool & cameraState, bool reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude) {
     File file = SD.open(filePath, O_CREAT | O_WRITE);
     file.print(ori.x, 3);                 file.print(",");
     file.print(ori.y, 3);                 file.print(",");

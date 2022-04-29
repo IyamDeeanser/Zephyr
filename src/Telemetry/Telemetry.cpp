@@ -23,14 +23,13 @@ void Telemetry::transmit(vec3 ori, vec3 accel, vec3 gyro, float altitude, float 
     Serial1.print(cameraState);              Serial1.print(",");
     Serial1.print(reactionWheelState);       Serial1.print(",");
     Serial1.print(onTimeSec, 2);             Serial1.print(",");
-    Serial1.print(flightTimeSec, 2);         Serial1.print(",");
+    Serial1.print(flightTimeSec, 0);         Serial1.print(",");
     Serial1.print(pressure, 2);              Serial1.print(",");
-    Serial1.print(imuTemp, 2);               Serial1.print(",");
-    Serial1.print(baroTemp, 2);              Serial1.print(",");
+    Serial1.print(imuTemp, 1);               Serial1.print(",");
+    Serial1.print(baroTemp, 1);              Serial1.print(",");
     Serial1.print(GPSSats);                  Serial1.print(",");
     Serial1.print(latitude, 4);              Serial1.print(",");
     Serial1.println(longitude, 4);
-    // ! IF NOT LOGGING FAST ENOUGH use Serial1.flush() to push all chars out before moving on! (blocking function)
 }
 
 void Telemetry::printlnStr(const String & s) {

@@ -21,6 +21,7 @@ public:
         vec3 accelHG,
         vec3 gyro,
         float altitude,
+        float positionX,
         float rwValue,
         float batteryVoltage,
         const int & systemState,
@@ -33,9 +34,8 @@ public:
         float baroTemp,
         float GPSSats,
         float latitude,
-        float longitude,
-        float positionX
-    );
+        float longitude
+        );
 };
 
 
