@@ -154,7 +154,6 @@ void loop()
     if(State >= POWERED_ASCENT && State != MISSION_COMPLETE) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
   }
 
-  // todo SELECT STATE GIVEN CONDITION (in case device restarts mid flight)
   switch(State) {
     case GROUND_IDLE:
       led.flash(led.yellow, led.green, 1000000, 50000, Time.currentTimeMicro, 13, 1100);
@@ -187,12 +186,20 @@ void loop()
       Baro.setAltitudeBias();
       imu.getGyroBias();
 
-      if(abs(imu.bodyAccel.x) >= 13 || Command == "AS") {
+      //! This is for HELICOPTER launch
+
+      static unsigned int ascentStartTime;
+
+      if(abs(imu.bodyAccel.x) < 12) {
+        ascentStartTime = millis();
+      }
+
+      if((millis() - ascentStartTime) >= 700 || Command == "AS"){
         Command = "";
         Cam.turnOn(); //For safety
         SDLogger.setFrequency(TLM_RATE_HIGH);
         Time.logLaunch();
-        if (!imu.biasComplete)
+        if (!imu.biasComplete) return;
         State = POWERED_ASCENT;
       }
 
@@ -211,37 +218,50 @@ void loop()
     case POWERED_ASCENT:
       led.party(Time.currentTimeMicro, 13, 1000);
 
-      if(abs(imu.bodyAccel.x) <= 2 || Command == "AS") {
-        Command = "";
-        State = PARACHUTE_DESCENT; //! THIS IS FOR DRONE FLIGHT
-        //State = UNPOWERED_ASCENT; //! THIS IS FOR ROCKET FLIGHT
-      }
-      break;
+      // if(abs(imu.bodyAccel.x) <= 2 || Command == "AS") {
+      //   Command = "";
+      //   State = PARACHUTE_DESCENT; //! THIS IS FOR DRONE FLIGHT
+      //   //State = UNPOWERED_ASCENT; //! THIS IS FOR ROCKET FLIGHT
+      // }
 
-    case UNPOWERED_ASCENT:
-      led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
-
-      if(abs(imu.bodyAccel.x) >= 5 || Command == "AS") {
-        Command = "";
-        State = SEPARATION;
-      }
-      break;
-    
-    case SEPARATION:
-      led.flash(led.white, led.blue, 350000, 40000, Time.currentTimeMicro, 13, 1100);
-      
       if(Baro.altitudeAGL > Baro.apogee) {
         Baro.apogee = Baro.altitudeAGL;
         Baro.apogeeTime = millis();
       }
 
-      if((millis() - Baro.apogeeTime) >= 500 || Command == "AS") {
+      if(((millis() - Baro.apogeeTime) >= 1500 && abs(Baro.apogee - Baro.altitudeAGL) > 9)|| Command == "AS") {
         Command = "";
         SDLogger.setFrequency(SD_RATE_HIGH);
         State = PARACHUTE_DESCENT;
       }
 
       break;
+
+    //! HELICOPTER SKIP THIS
+    // case UNPOWERED_ASCENT:
+    //   led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
+ 
+    //   if(abs(imu.bodyAccel.x) >= 5 || Command == "AS") {
+    //     Command = "";
+    //     State = SEPARATION;
+    //   }
+    //   break;
+    
+    // case SEPARATION:
+    //   led.flash(led.white, led.blue, 350000, 40000, Time.currentTimeMicro, 13, 1100);
+      
+    //   if(Baro.altitudeAGL > Baro.apogee) {
+    //     Baro.apogee = Baro.altitudeAGL;
+    //     Baro.apogeeTime = millis();
+    //   }
+
+    //   if((millis() - Baro.apogeeTime) >= 500 || Command == "AS") {
+    //     Command = "";
+    //     SDLogger.setFrequency(SD_RATE_HIGH);
+    //     State = PARACHUTE_DESCENT;
+    //   }
+
+    //   break;
 
     case PARACHUTE_DESCENT:
       led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
@@ -250,6 +270,7 @@ void loop()
 
       if (millis() >= (parachuteDescentStartTime + 10000)|| Command == "AS") {
         Command = "";
+        RCW.setState(true); //safety
         State = ROLL_CONTROL;
       }
 
@@ -260,6 +281,14 @@ void loop()
 
       RollPID.update(Time, Quat.roll);
       RCW.writeWheelOutput(RollPID.Output);
+
+      if(abs(RollPID.Output) < 255) {
+        RCW.satTime = millis();
+      }
+
+      if(((millis() - RCW.satTime) >= 10000)) {
+        RCW.setState(false);
+      }
 
       if(Command == "SP") {
         Command = "";
@@ -274,13 +303,13 @@ void loop()
       
       break;
 
-    case LANDING_DETECT: // ! untested
+    case LANDING_DETECT:
       led.flash(led.blue, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1380);
 
       static float loggedAlt = Baro.altitudeAGL;
       static long loggedAltTime = millis();
       
-      if (abs(loggedAlt - Baro.altitudeAGL) > 1) { // ! 1 might be to small
+      if (abs(loggedAlt - Baro.altitudeAGL) > 2) {
         loggedAlt = Baro.altitudeAGL;
         loggedAltTime = millis();
       } else if (millis() - loggedAltTime > 5000) {
@@ -333,7 +362,7 @@ void logData() {
     Cam.getState(), // (bool) cam state
     RCW.getState(),
     Time.currentTimeSec, // on time in secs
-    (State == GROUND_IDLE || State == LAUNCH_READY) ? 0 : Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Flight time is 0 until flight has started
+    (State == GROUND_IDLE || State == LAUNCH_READY) ? 0 : (Time.currentTimeSec - Time.launchTime), // Flight time is 0 until flight has started
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,
@@ -356,7 +385,7 @@ void sendData() {
     Cam.getState(), // (bool) cam state
     RCW.getState(), // (bool) rwState 
     Time.currentTimeSec, // on time in secs
-    (State == GROUND_IDLE || State == LAUNCH_READY) ? 0 : Time.currentTimeSec - (Time.launchTime  / 1000000.0), // Flight time is 0 until flight has started
+    (State == GROUND_IDLE || State == LAUNCH_READY) ? 0 : (Time.currentTimeSec - Time.launchTime), // Flight time is 0 until flight has started
     Baro.pressure, // imu temp
     imu.temperature, // imu temp
     Baro.temperature,

@@ -7,8 +7,8 @@ class ReactionWheel {
 private:
     const int outPin1 = 5;
     const int outPin2 = 11;
-    bool state = 0;
     float wheelOutput;
+    bool state = true;
 public:
 
     ReactionWheel();
@@ -18,7 +18,10 @@ public:
     void off();
 
     bool getState() const;
+    void setState(bool val);
     bool getValue() const;
+
+    float satTime;
 };
 
 #endif
