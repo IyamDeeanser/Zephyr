@@ -15,7 +15,7 @@ struct GPS_Variables{
         float latitude;
         float longitude;
 
-        //Cardingal directions in N,E,S,W for latitude and longitude
+        //Cardinal directions in N,E,S,W for latitude and longitude
         char latDir;
         char lonDir;
 
