@@ -69,8 +69,12 @@ void GPS_Variables::GPSUpdate(){
         latitude = GPS.latitude;
         latDir = GPS.lat;
 
+        if (latDir == 'S'){latitude *= -1;}
+
         longitude = GPS.longitude;
         lonDir = GPS.lon;
+
+        if (lonDir == 'W'){longitude *= -1;}
 
         speed = GPS.speed;
 
