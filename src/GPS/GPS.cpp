@@ -66,12 +66,12 @@ void GPS_Variables::GPSUpdate(){
     fix = (int)GPS.fix;
     fixQuality = (int)GPS.fixquality;
     if (GPS.fix) {
-        latitude = GPS.latitude;
+        latitude = GPS.latitude / 100;
         latDir = GPS.lat;
 
         if (latDir == 'S'){latitude *= -1;}
 
-        longitude = GPS.longitude;
+        longitude = GPS.longitude / 100;
         lonDir = GPS.lon;
 
         if (lonDir == 'W'){longitude *= -1;}
