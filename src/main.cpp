@@ -25,7 +25,7 @@ States State;
 Timer Time;
 Telemetry TLM;
 SD_File logFile;
-SD_File settingsFile; // ! we havent dont anything w/ this file yet
+SD_File dataFile; // ! we havent dont anything w/ this file yet
 Camera Cam;
 Accelerometer Accel;
 Barometer Baro;
@@ -103,7 +103,7 @@ void setup() {
     logFile.begin("log.csv", flightFolderPath);
     logFile.println("Ori x (deg),Ori y (deg),Ori z (deg),Accel x (m/s^2),Accel y (m/s^2),Accel z (m/s^2),AccelHiG x (m/s^2),AccelHiG y (m/s^2),AccelHiG z (m/s^2),Gyro x (deg/s),Gyro y (deg/s),Gyro z (deg/s),Baro Alt AGL (m),GPS Altitude (m),RW Value,Voltage,State,Cam State,RW State,On Time (sec),Flight Time (sec),Pressure (hPa),IMU Temp (C),Baro Temp (C),GPS Sats,Latitude,Longitude");
     // ^ printing header log file
-    settingsFile.begin("data.txt", flightFolderPath);
+    dataFile.begin("data.txt", flightFolderPath);
 
     // Coroutines
     SDLogger.begin(logData);
@@ -132,20 +132,18 @@ void loop()
     GPSVar.GPSUpdate();
     Command = TLM.read();
     if(State == GROUND_IDLE || State == LAUNCH_READY) Quat.accelOri(imu.bodyAccel.x,imu.bodyAccel.y,imu.bodyAccel.z);
-    if(State >= POWERED_ASCENT && State != MISSION_COMPLETE) Quat.update(imu, Time); // what happens if quat updats before powered ascent?
+    if(State >= POWERED_ASCENT && State != MISSION_COMPLETE) Quat.update(imu, Time);
   }
 
   switch(State) {
     case GROUND_IDLE:
       led.flash(led.yellow, led.green, 1000000, 50000, Time.currentTimeMicro, 13, 1100);
-
-      Baro.setAltitudeBias();
-
+      
       if(Command == "EN"){ //Enable launch command
         Command = "";
         SDLogger.resume(); // starts logging data 
         TLMSender.setFrequency(TLM_RATE_HIGH);
-
+        Baro.setAltitudeBias();
         State = LAUNCH_READY;
       }
 
@@ -164,23 +162,25 @@ void loop()
     case LAUNCH_READY: 
       led.flash(led.blue, led.white, 1000000, 50000, Time.currentTimeMicro, 13, 1380);
 
-      Baro.setAltitudeBias();
       imu.getGyroBias();
-
-      //! This is for HELICOPTER launch
 
       static unsigned int ascentStartTime;
 
-      if(abs(imu.bodyAccel.x) < 12) {
-        ascentStartTime = millis();
-      }
+      // ! doesnt account for done or heli 
 
-      if((millis() - ascentStartTime) >= 700 || Command == "AS"){
-        Command = "";
+      // if(Accel.getAccelMag() < 12) {
+      //   ascentStartTime = millis();
+      // }
+
+      if(Baro.rawAltitude - Baro.bias < 25) {
+        ascentStartTime = millis();
+      } else if((millis() - ascentStartTime) >= 700 || Command == "AS") {
+        // Command = ""; // ? Pretty sure this isn't needed
         Cam.turnOn(); //For safety
         SDLogger.setFrequency(TLM_RATE_HIGH);
         Time.logLaunch();
         if (!imu.biasComplete) return;
+        dataFile.println("Launch Time: " + ascentStartTime);
         State = POWERED_ASCENT;
       }
 
@@ -203,10 +203,12 @@ void loop()
         Baro.apogee = Baro.altitudeAGL;
         Baro.apogeeTime = millis();
       }
-
-      if(((millis() - Baro.apogeeTime) >= 1500 && abs(Baro.apogee - Baro.altitudeAGL) > 9)|| Command == "AS") {
-        Command = "";
+      // ! maybe we don't need the apogee - altitudeAGL cuz first condition means alt < apogee
+      if(((millis() - Baro.apogeeTime) >= 1500 && Baro.apogee - Baro.altitudeAGL > 9)|| Command == "AS") {
+        // Command = "";
         SDLogger.setFrequency(SD_RATE_HIGH);
+        dataFile.println("Apogee Time: " + Baro.apogeeTime);
+        dataFile.println("Apogee Height: " + String(Baro.apogee));
         State = PARACHUTE_DESCENT;
       }
 
@@ -263,7 +265,6 @@ void loop()
         loggedAltTime = millis();
       } else if (millis() - loggedAltTime > 5000) {
         TLMSender.setFrequency(TLM_RATE_LOW);
-        logFile.eject();
         State = MISSION_COMPLETE;
       }
 
@@ -271,7 +272,6 @@ void loop()
       if(((abs(imu.bodyGyroRad.x) < 0.1) && (abs(imu.bodyGyroRad.y) < 0.1) && (abs(imu.bodyGyroRad.z) < 0.1)) || Command == "AS") {
         Command = "";
         TLMSender.setFrequency(TLM_RATE_LOW);
-        logFile.eject();
         State = MISSION_COMPLETE;
       }
 
@@ -283,6 +283,7 @@ void loop()
       static unsigned int landingTime = millis();
       if((millis() - landingTime) >= 15000){ //leave 15 second delay before shutting camera off
         Cam.turnOff();
+        dataFile.println("Landing Time: " + landingTime);
       }
 
       break;
@@ -295,6 +296,27 @@ void loop()
     default:
       break;
   }  
+
+  // SMART STATE SWITCH
+  static float lastAltLog = Baro.altitudeAGL;
+  static float lastLogTime = millis();
+
+  if(millis() > lastLogTime + 2500) {
+    float deltaAlt = Baro.altitudeAGL - lastAltLog;
+
+    if(abs(deltaAlt) > 13) {
+      // forgot to mantually set state to Launch Ready
+      if(deltaAlt < 0) {
+        ForceState(POWERED_ASCENT);
+      } else if(State < PARACHUTE_DESCENT || State == MISSION_COMPLETE) {
+        ForceState(PARACHUTE_DESCENT);
+      }
+    }
+
+    lastAltLog = Baro.altitudeAGL;
+    lastLogTime = millis();
+  }
+
 }
 
 void logData() {
@@ -345,16 +367,42 @@ void sendData() {
 }
 
 void ForceState(States target) {
+  dataFile.println("Force State Switch to '" + String(target) + "' at time: " + millis());
+
+  if(State != ROLL_CONTROL) {
+    RCW.setState(false);
+  } else {
+    RCW.setState(true); // more conditions needed in case saturated?
+  }
+
+  // set altitude bias
+
   switch (State)
   {
-  case GROUND_IDLE:
+  case LAUNCH_READY:
+    TLMSender.setFrequency(TLM_RATE_HIGH);
+    SDLogger.setFrequency(SD_RATE_LOW);
+    
+    break;
 
+  case POWERED_ASCENT:
+    Time.logLaunch();
+    TLMSender.setFrequency(TLM_RATE_HIGH);
+    SDLogger.setFrequency(SD_RATE_HIGH);
+    break;
+
+  case PARACHUTE_DESCENT:
+    Baro.apogee = Baro.altitudeAGL;
+    TLMSender.setFrequency(TLM_RATE_HIGH);
+    SDLogger.setFrequency(SD_RATE_HIGH);
     break;
 
   default:
-    // ! ERROR
+    dataFile.println("Force State Switch ERROR");
+
     break;
   }
   
+  // must be last line
   State = target;
 }
