@@ -3,7 +3,7 @@
 
 Adafruit_LSM6DSL lsm;
 
-bool IMU_Sensor::begin() {
+bool IMU::begin() {
     if (!lsm.begin_I2C()) {
         return false;
     }
@@ -16,7 +16,7 @@ bool IMU_Sensor::begin() {
     return true;
 }
 
-void IMU_Sensor::update() {
+void IMU::update() {
     sensors_event_t accel, gyro, temp;
     lsm.getEvent(&accel, &gyro, &temp);
 
@@ -35,7 +35,7 @@ void IMU_Sensor::update() {
     bodyAccel.z = accel.acceleration.z;
 }
 
-void IMU_Sensor::getGyroBias() {
+void IMU::getGyroBias() {
     const static unsigned long startTime = millis();
     static int loopNum = 0;
     const int delayTime = 6; // in milliseconds

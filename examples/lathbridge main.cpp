@@ -1,5 +1,24 @@
+// ! We should write a bit of info abt this project & abt team zephyr
+
+//⠀⣞⢽⢪⢣⢣⢣⢫⡺⡵⣝⡮⣗⢷⢽⢽⢽⣮⡷⡽⣜⣜⢮⢺⣜⢷⢽⢝⡽⣝
+//⠸⡸⠜⠕⠕⠁⢁⢇⢏⢽⢺⣪⡳⡝⣎⣏⢯⢞⡿⣟⣷⣳⢯⡷⣽⢽⢯⣳⣫⠇
+//⠀⠀⢀⢀⢄⢬⢪⡪⡎⣆⡈⠚⠜⠕⠇⠗⠝⢕⢯⢫⣞⣯⣿⣻⡽⣏⢗⣗⠏⠀
+//⠀⠪⡪⡪⣪⢪⢺⢸⢢⢓⢆⢤⢀⠀⠀⠀⠀⠈⢊⢞⡾⣿⡯⣏⢮⠷⠁⠀⠀
+//⠀⠀⠀⠈⠊⠆⡃⠕⢕⢇⢇⢇⢇⢇⢏⢎⢎⢆⢄⠀⢑⣽⣿⢝⠲⠉⠀⠀⠀⠀
+//⠀⠀⠀⠀⠀⡿⠂⠠⠀⡇⢇⠕⢈⣀⠀⠁⠡⠣⡣⡫⣂⣿⠯⢪⠰⠂⠀⠀⠀⠀
+//⠀⠀⠀⠀⡦⡙⡂⢀⢤⢣⠣⡈⣾⡃⠠⠄⠀⡄⢱⣌⣶⢏⢊⠂⠀⠀⠀⠀⠀⠀
+//⠀⠀⠀⠀⢝⡲⣜⡮⡏⢎⢌⢂⠙⠢⠐⢀⢘⢵⣽⣿⡿⠁⠁⠀⠀⠀⠀⠀⠀⠀
+//⠀⠀⠀⠀⠨⣺⡺⡕⡕⡱⡑⡆⡕⡅⡕⡜⡼⢽⡻⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+//⠀⠀⠀⠀⣼⣳⣫⣾⣵⣗⡵⡱⡡⢣⢑⢕⢜⢕⡝⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+//⠀⠀⠀⣴⣿⣾⣿⣿⣿⡿⡽⡑⢌⠪⡢⡣⣣⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+//⠀⠀⠀⡟⡾⣿⢿⢿⢵⣽⣾⣼⣘⢸⢸⣞⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+//⠀⠀⠀⠀⠁⠇⠡⠩⡫⢿⣝⡻⡮⣒⢽⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// 
+//      no documentation?
+
 // Libraries
 #include <Arduino.h>
+#include "Settings/Settings.h" // ! We don't need this file
 #include "States/States.h"
 #include "Timer/Timer.h"
 #include "Telemetry/Telemetry.h"
@@ -100,10 +119,10 @@ void setup() {
 
     // // Files
     String flightFolderPath = SD_Card::createNewDir();
-    logFile.begin("log.csv", flightFolderPath);
+    logFile.begin("data.csv", flightFolderPath);
     logFile.println("Ori x (deg),Ori y (deg),Ori z (deg),Accel x (m/s^2),Accel y (m/s^2),Accel z (m/s^2),AccelHiG x (m/s^2),AccelHiG y (m/s^2),AccelHiG z (m/s^2),Gyro x (deg/s),Gyro y (deg/s),Gyro z (deg/s),Baro Alt AGL (m),GPS Altitude (m),RW Value,Voltage,State,Cam State,RW State,On Time (sec),Flight Time (sec),Pressure (hPa),IMU Temp (C),Baro Temp (C),GPS Sats,Latitude,Longitude");
     // ^ printing header log file
-    settingsFile.begin("data.txt", flightFolderPath);
+    settingsFile.begin("settings.txt", flightFolderPath);
 
     // Coroutines
     SDLogger.begin(logData);
@@ -199,6 +218,12 @@ void loop()
     case POWERED_ASCENT:
       led.party(Time.currentTimeMicro, 13, 1000);
 
+      // if(abs(imu.bodyAccel.x) <= 2 || Command == "AS") {
+      //   Command = "";
+      //   State = PARACHUTE_DESCENT; //! THIS IS FOR DRONE FLIGHT
+      //   //State = UNPOWERED_ASCENT; //! THIS IS FOR ROCKET FLIGHT
+      // }
+
       if(Baro.altitudeAGL > Baro.apogee) {
         Baro.apogee = Baro.altitudeAGL;
         Baro.apogeeTime = millis();
@@ -211,6 +236,32 @@ void loop()
       }
 
       break;
+
+    //! HELICOPTER SKIP THIS
+    // case UNPOWERED_ASCENT:
+    //   led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
+ 
+    //   if(abs(imu.bodyAccel.x) >= 5 || Command == "AS") {
+    //     Command = "";
+    //     State = SEPARATION;
+    //   }
+    //   break;
+    
+    // case SEPARATION:
+    //   led.flash(led.white, led.blue, 350000, 40000, Time.currentTimeMicro, 13, 1100);
+      
+    //   if(Baro.altitudeAGL > Baro.apogee) {
+    //     Baro.apogee = Baro.altitudeAGL;
+    //     Baro.apogeeTime = millis();
+    //   }
+
+    //   if((millis() - Baro.apogeeTime) >= 500 || Command == "AS") {
+    //     Command = "";
+    //     SDLogger.setFrequency(SD_RATE_HIGH);
+    //     State = PARACHUTE_DESCENT;
+    //   }
+
+    //   break;
 
     case PARACHUTE_DESCENT:
       led.flash(led.purple, led.white, 350000, 40000, Time.currentTimeMicro, 13, 1400);
@@ -342,19 +393,4 @@ void sendData() {
     GPSVar.latitude, //Lat 
     GPSVar.longitude //lon
   );
-}
-
-void ForceState(States target) {
-  switch (State)
-  {
-  case GROUND_IDLE:
-
-    break;
-
-  default:
-    // ! ERROR
-    break;
-  }
-  
-  State = target;
 }

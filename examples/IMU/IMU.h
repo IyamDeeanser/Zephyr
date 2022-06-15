@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "../Vec3/Vec3.h"
 
-class IMU_Sensor {
+class IMU {
   public:
     //Raw gyro readings   Tims note: this is not raw. theres debiasing processing
     vec3 bodyGyroRad;
