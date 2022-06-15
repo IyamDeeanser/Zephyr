@@ -48,7 +48,7 @@ SD_File settingsFile; // ! we havent dont anything w/ this file yet
 Camera Cam;
 Accelerometer Accel;
 Barometer Baro;
-IMU imu;
+IMU_Sensor imu;
 Coroutine SDLogger;
 Coroutine TLMSender;
 GPS_Variables GPSVar; 

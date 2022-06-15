@@ -20,7 +20,7 @@ void Quaternion::accelOri(float xAccel, float yAccel, float zAccel)
     accelYaw = accelYaw * (180.0/PI) ;
 }
 
-void Quaternion::update(IMU& gyro, Timer& time)
+void Quaternion::update(IMU_Sensor& gyro, Timer& time)
 {
     //Get the current angular rate
     wS[0] = 0;

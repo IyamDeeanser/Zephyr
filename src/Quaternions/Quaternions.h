@@ -24,7 +24,7 @@ public:
     float accelYaw, accelPitch;
     void begin();
     void accelOri(float xAccel, float yAccel, float zAccel);
-    void update(IMU& gyro, Timer& time);
+    void update(IMU_Sensor& gyro, Timer& time);
 };
 
 #endif

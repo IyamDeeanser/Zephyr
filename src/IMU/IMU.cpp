@@ -1,41 +1,33 @@
 #include "IMU.h"
-#include <Adafruit_LSM6DSL.h>
+#include <Arduino_LSM6DS3.h>
 
-Adafruit_LSM6DSL lsm;
-
-bool IMU::begin() {
-    if (!lsm.begin_I2C()) {
-        return false;
-    }
-
-    lsm.setAccelRange(LSM6DS_ACCEL_RANGE_16_G);
-    lsm.setGyroRange(LSM6DS_GYRO_RANGE_500_DPS);
-    lsm.setAccelDataRate(LSM6DS_RATE_208_HZ);
-    lsm.setGyroDataRate(LSM6DS_RATE_208_HZ);
-
-    return true;
+bool IMU_Sensor::begin() {
+    return IMU.begin();
 }
 
-void IMU::update() {
-    sensors_event_t accel, gyro, temp;
-    lsm.getEvent(&accel, &gyro, &temp);
+void IMU_Sensor::update() {
+    vec3 rawGyroData;
 
-    temperature = temp.temperature;
+    if (IMU.accelerationAvailable()) {
+        IMU.readAcceleration(bodyAccel.x, bodyAccel.y, bodyAccel.z);
+    }
 
-    bodyGyroRad.x = gyro.gyro.x - gyroBias.x;
-    bodyGyroRad.y = gyro.gyro.y - gyroBias.y;
-    bodyGyroRad.z = gyro.gyro.z - gyroBias.z;
+    if (IMU.gyroscopeAvailable()) {
+        IMU.readGyroscope(rawGyroData.x, rawGyroData.y, rawGyroData.z);
+    }
+
+    bodyGyroRad.x = rawGyroData.x - gyroBias.x;
+    bodyGyroRad.y = rawGyroData.y - gyroBias.y;
+    bodyGyroRad.z = rawGyroData.z - gyroBias.z;
 
     bodyGyroDeg.x = bodyGyroRad.x * (180/PI);
     bodyGyroDeg.y = bodyGyroRad.y * (180/PI);
     bodyGyroDeg.z = bodyGyroRad.z * (180/PI);
 
-    bodyAccel.x = accel.acceleration.x;
-    bodyAccel.y = accel.acceleration.y;
-    bodyAccel.z = accel.acceleration.z;
+    // temperature = temp.temperature;
 }
 
-void IMU::getGyroBias() {
+void IMU_Sensor::getGyroBias() {
     const static unsigned long startTime = millis();
     static int loopNum = 0;
     const int delayTime = 6; // in milliseconds
@@ -45,12 +37,12 @@ void IMU::getGyroBias() {
 
     if (millis() > startTime + delayTime * loopNum && loopNum < totalLoops){
         loopNum++;
-        sensors_event_t accel, gyro, temp;
-        lsm.getEvent(&accel, &gyro, &temp);
+        vec3 rawGyroData;
+        IMU.readGyroscope(rawGyroData.x, rawGyroData.y, rawGyroData.z);
 
-        gyroBias.x = gyroBias.x + gyro.gyro.x;
-        gyroBias.y = gyroBias.y + gyro.gyro.y;
-        gyroBias.z = gyroBias.z + gyro.gyro.z;
+        gyroBias.x = gyroBias.x + rawGyroData.x;
+        gyroBias.y = gyroBias.y + rawGyroData.y;
+        gyroBias.z = gyroBias.z + rawGyroData.z;
     }
 
     if (loopNum > totalLoops) biasComplete = true;
