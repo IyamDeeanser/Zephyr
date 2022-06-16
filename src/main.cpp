@@ -369,10 +369,10 @@ void sendData() {
 void ForceState(States target) {
   dataFile.println("Force State Switch to '" + String(target) + "' at time: " + millis());
 
-  if(State != ROLL_CONTROL) {
-    RCW.setState(false);
+  if(target != MISSION_COMPLETE) {
+    Cam.turnOn();
   } else {
-    RCW.setState(true); // more conditions needed in case saturated?
+    Cam.turnOff();
   }
 
   // set altitude bias
