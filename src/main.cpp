@@ -44,12 +44,13 @@ const float G = 9.80665;
 // Prototype Functions
 void logData();
 void sendData();
+void ForceState(States target);
 
 // setup loop
 void setup() {
   led.colour(led.purple);
 
-  delay(1000);
+  delay(10000); // !! CHANGE THIS BACK
   
   // Telemetry
   TLM.begin();
