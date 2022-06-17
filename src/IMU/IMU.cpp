@@ -1,7 +1,7 @@
 #include "IMU.h"
-#include <Adafruit_LSM6DS3.h>
+#include <Adafruit_LSM6DS3TRC.h>
 
-Adafruit_LSM6DS3 lsm;
+Adafruit_LSM6DS3TRC lsm;
 
 bool IMU::begin() {
     if (!lsm.begin_I2C()) {
