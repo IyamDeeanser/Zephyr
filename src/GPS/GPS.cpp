@@ -12,7 +12,7 @@ GPS_Variables::GPS_Variables(){
     latitude = 0.0;
     longitude = 0.0;
 
-    //Cardingal directions in N,E,S,W for latitude and longitude
+    //Cardinal directions in N,E,S,W for latitude and longitude
     latDir = 'N';
     lonDir = 'W';
 
@@ -25,6 +25,20 @@ GPS_Variables::GPS_Variables(){
     //Fix info
     fix = 0;
     fixQuality = 0;
+}
+
+//Converts lat/long in degree decimal minutes form to decimal degrees 
+double GPS_Variables::convertToDecimalDegrees(double degMins){
+    double result = 0.0;
+
+    int degrees = (int) (degMins/100.0);
+    double minutes = degMins - degrees;
+
+    double leftOverDeg = minutes/60.0;
+
+    result = degrees + leftOverDeg;
+
+    return result;
 }
 
 bool GPS_Variables::GPSBegin(){
@@ -66,12 +80,12 @@ void GPS_Variables::GPSUpdate(){
     fix = (int)GPS.fix;
     fixQuality = (int)GPS.fixquality;
     if (GPS.fix) {
-        latitude = GPS.latitude / 100;
+        latitude = convertToDecimalDegrees(GPS.latitude);
         latDir = GPS.lat;
 
         if (latDir == 'S'){latitude *= -1;}
 
-        longitude = GPS.longitude / 100;
+        longitude = convertToDecimalDegrees(GPS.longitude);
         lonDir = GPS.lon;
 
         if (lonDir == 'W'){longitude *= -1;}
