@@ -3,6 +3,7 @@
 //Global variables :((
 // Connect to the ZephyrGPS on the hardware I2C port
 Adafruit_GPS GPS(&Wire);
+#define Serial SerialUSB
 
 //A timer to make sure data isn't jamming and updating properly
 uint32_t timer = millis();
@@ -32,7 +33,7 @@ double GPS_Variables::convertToDecimalDegrees(double degMins){
     double result = 0.0;
 
     int degrees = (int) (degMins/100.0);
-    double minutes = degMins - degrees;
+    double minutes = degMins - degrees*100;
 
     double leftOverDeg = minutes/60.0;
 
@@ -43,6 +44,7 @@ double GPS_Variables::convertToDecimalDegrees(double degMins){
 
 bool GPS_Variables::GPSBegin(){
 
+    SerialUSB.begin(115200);
     if (!GPS.begin(0x10)){
         return false;
     } 
@@ -65,9 +67,6 @@ void GPS_Variables::GPSUpdate(){
     //Reads NMEA character by character 
     char c = GPS.read();
 
-    if (ZephyrGPSECHO){
-        if (c) Serial.print(c);
-    }
     // if a sentence is received, we can check the checksum, parse it...
     if (GPS.newNMEAreceived()) {
         // we can fail to parse a sentence in which case we should just wait for another
