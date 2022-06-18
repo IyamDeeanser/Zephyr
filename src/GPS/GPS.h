@@ -12,17 +12,17 @@
 struct GPS_Variables{
 
     //Latitude and Longitude Numbers 
-        float latitude;
-        float longitude;
+        double latitude;
+        double longitude;
 
-        //Cardinal directions in N,E,S,W for latitude and longitude
+        //Cardingal directions in N,E,S,W for latitude and longitude
         char latDir;
         char lonDir;
 
         //Other variables
-        float altitude;
-        float speed;
-        float angle;
+        double altitude;
+        double speed;
+        double angle;
         int numSatellites;
 
         //Fix info
@@ -32,6 +32,7 @@ struct GPS_Variables{
     GPS_Variables();
     bool GPSBegin();
     void GPSUpdate();
+    double convertToDecimalDegrees(double degMins);
 };
 
 #endif
