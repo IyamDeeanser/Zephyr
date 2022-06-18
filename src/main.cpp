@@ -50,7 +50,7 @@ void ForceState(States target);
 void setup() {
   led.colour(led.purple);
 
-  delay(10000); // !! CHANGE THIS BACK
+  delay(5000); // !! CHANGE THIS BACK
   
   // Telemetry
   TLM.begin();
