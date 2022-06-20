@@ -1,3 +1,5 @@
+// # CHECK TELE CODE!
+
 // Libraries
 #include <Arduino.h>
 #include "States/States.h"
@@ -299,25 +301,26 @@ void loop()
   }  
 
   // SMART STATE SWITCH
-  static float lastAltLog = Baro.altitudeAGL;
-  static float lastLogTime = millis();
+  if(State != GROUND_IDLE) {
+    static float lastAltLog = Baro.altitudeAGL;
+    static float lastLogTime = millis();
 
-  if(millis() > lastLogTime + 2500) {
-    float deltaAlt = Baro.altitudeAGL - lastAltLog;
+    if(millis() > lastLogTime + 2500) {
+      float deltaAlt = Baro.altitudeAGL - lastAltLog;
 
-    if(abs(deltaAlt) > 13) {
-      // forgot to mantually set state to Launch Ready
-      if(deltaAlt < 0) {
-        ForceState(POWERED_ASCENT);
-      } else if(State < PARACHUTE_DESCENT || State == MISSION_COMPLETE) {
-        ForceState(PARACHUTE_DESCENT);
+      if(abs(deltaAlt) > 13) {
+        // forgot to mantually set state to Launch Ready
+        if(deltaAlt < 0) {
+          ForceState(POWERED_ASCENT);
+        } else if(State < PARACHUTE_DESCENT || State == MISSION_COMPLETE) {
+          ForceState(PARACHUTE_DESCENT);
+        }
       }
+
+      lastAltLog = Baro.altitudeAGL;
+      lastLogTime = millis();
     }
-
-    lastAltLog = Baro.altitudeAGL;
-    lastLogTime = millis();
   }
-
 }
 
 void logData() {
@@ -378,7 +381,7 @@ void ForceState(States target) {
 
   // set altitude bias
 
-  switch (State)
+  switch (target)
   {
   case LAUNCH_READY:
     TLMSender.setFrequency(TLM_RATE_HIGH);
