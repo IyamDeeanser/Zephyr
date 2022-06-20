@@ -44,7 +44,6 @@ double GPS_Variables::convertToDecimalDegrees(double degMins){
 
 bool GPS_Variables::GPSBegin(){
 
-    SerialUSB.begin(115200);
     if (!GPS.begin(0x10)){
         return false;
     } 
