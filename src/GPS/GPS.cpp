@@ -97,7 +97,7 @@ void GPS_Variables::GPSUpdate(){
         numSatellites = (int)GPS.satellites;
     }
     else{
-        SerialUSB.print("Ew no fix again. :(");
+        // SerialUSB.print("Ew no fix again. :(");
     }
   }
 }
