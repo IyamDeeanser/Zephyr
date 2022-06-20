@@ -23,4 +23,5 @@ void Barometer::update() {
 
 void Barometer::setAltitudeBias(){
     bias = rawAltitude;
+    update();
 }
