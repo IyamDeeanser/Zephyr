@@ -27,7 +27,7 @@ States State;
 Timer Time;
 Telemetry TLM;
 SD_File logFile;
-SD_File dataFile; // ! we havent dont anything w/ this file yet
+// SD_File dataFile; // ! we havent dont anything w/ this file yet
 Camera Cam;
 Accelerometer Accel;
 Barometer Baro;
@@ -106,7 +106,7 @@ void setup() {
     logFile.begin("log.csv", flightFolderPath);
     logFile.println("Ori x (deg),Ori y (deg),Ori z (deg),Accel x (m/s^2),Accel y (m/s^2),Accel z (m/s^2),AccelHiG x (m/s^2),AccelHiG y (m/s^2),AccelHiG z (m/s^2),Gyro x (deg/s),Gyro y (deg/s),Gyro z (deg/s),Baro Alt AGL (m),GPS Altitude (m),RW Value,Voltage,State,Cam State,RW State,On Time (sec),Flight Time (sec),Pressure (hPa),IMU Temp (C),Baro Temp (C),GPS Sats,Latitude,Longitude");
     // ^ printing header log file
-    dataFile.begin("data.txt", flightFolderPath);
+    // dataFile.begin("data.txt", flightFolderPath);
 
     // Coroutines
     SDLogger.begin(logData);
@@ -146,7 +146,7 @@ void loop()
         SDLogger.resume(); // starts logging data 
         TLMSender.setFrequency(TLM_RATE_HIGH);
         Baro.setAltitudeBias();
-        dataFile.println("goto Launch_Ready at time:" + String(millis()));
+        // dataFile.println("goto Launch_Ready at time:" + String(millis()));
         
         State = LAUNCH_READY;
       }
@@ -180,8 +180,8 @@ void loop()
         SDLogger.setFrequency(TLM_RATE_HIGH);
         Time.logLaunch();
         // if (!imu.biasComplete) return; // ! I feel like we shouldn't have this bc if any of these triggers happen, can is probably in flight.
-        dataFile.println("Ascent Start Time: " + String(ascentStartTime));
-        dataFile.println("goto Power_Ascent at time:" + String(millis()));
+        // dataFile.println("Ascent Start Time: " + String(ascentStartTime));
+        // dataFile.println("goto Power_Ascent at time:" + String(millis()));
 
         State = POWERED_ASCENT;
       }
@@ -206,12 +206,12 @@ void loop()
         Baro.apogeeTime = millis();
       }
       // ! maybe we don't need the apogee - altitudeAGL cuz first condition means alt < apogee
-      if(((millis() - Baro.apogeeTime) >= 1500 && Baro.apogee - Baro.altitudeAGL > 9)|| Command == "AS") {
+      if((((millis() - Baro.apogeeTime) >= 1500 && Baro.apogee - Baro.altitudeAGL > 9)) || Command == "AS") {
         // Command = "";
         SDLogger.setFrequency(SD_RATE_HIGH);
-        dataFile.println("Apogee Time: " + String(Baro.apogeeTime));
-        dataFile.println("Apogee Height: " + String(Baro.apogee));
-        dataFile.println("goto Parachute_Descent at time:" + String(millis()));
+        // dataFile.println("Apogee Time: " + String(Baro.apogeeTime));
+        // dataFile.println("Apogee Height: " + String(Baro.apogee));
+        // dataFile.println("goto Parachute_Descent at time:" + String(millis()));
         State = PARACHUTE_DESCENT;
       }
 
@@ -225,7 +225,7 @@ void loop()
       if (millis() >= (parachuteDescentStartTime + 10000)|| Command == "AS") {
         Command = "";
         RCW.setState(true); //safety
-        dataFile.println("goto Roll_Control at time:" + String(millis()));
+        // dataFile.println("goto Roll_Control at time:" + String(millis()));
         State = ROLL_CONTROL;
       }
 
@@ -253,7 +253,7 @@ void loop()
       if(Baro.altitudeAGL <= 30 || Command == "AS") {
         Command = "";
         SDLogger.setFrequency(SD_RATE_MEDIUM);
-        dataFile.println("goto Landing_Detect at time:" + String(millis()));
+        // dataFile.println("goto Landing_Detect at time:" + String(millis()));
         State = LANDING_DETECT;
       }
       
@@ -272,7 +272,7 @@ void loop()
           lastLogTime = millis();
         } else if (millis() - lastLogTime > 5000) {
           TLMSender.setFrequency(TLM_RATE_LOW);
-          dataFile.println("goto Mission_Complete at time:" + String(millis()));
+          // dataFile.println("goto Mission_Complete at time:" + String(millis()));
           State = MISSION_COMPLETE;
         }
         
@@ -284,7 +284,7 @@ void loop()
       if(((abs(imu.bodyGyroRad.x) < 0.1) && (abs(imu.bodyGyroRad.y) < 0.1) && (abs(imu.bodyGyroRad.z) < 0.1)) || Command == "AS") {
         Command = "";
         TLMSender.setFrequency(TLM_RATE_LOW);
-        dataFile.println("Landing Time: " + String(millis()));
+        // dataFile.println("Landing Time: " + String(millis()));
         State = MISSION_COMPLETE;
       }
 
@@ -326,9 +326,9 @@ void loop()
 
       if(abs(deltaAlt) > 13) {
         
-        dataFile.println("Time: " + String(millis()));
-        dataFile.println("Alt:" + String(Baro.altitudeAGL));
-        dataFile.println("DAlt:" + String(deltaAlt));
+        // dataFile.println("Time: " + String(millis()));
+        // dataFile.println("Alt:" + String(Baro.altitudeAGL));
+        // dataFile.println("DAlt:" + String(deltaAlt));
         
         if(deltaAlt > 0 && State != POWERED_ASCENT) {
           ForceState(POWERED_ASCENT);
@@ -392,7 +392,7 @@ void sendData() {
 }
 
 void ForceState(States target) {
-  dataFile.println("Force State Switch to '" + String(target) + "' at time: " + String(millis()));
+  // dataFile.println("Force State Switch to '" + String(target) + "' at time: " + String(millis()));
 
   if(target != MISSION_COMPLETE) {
     Cam.turnOn();
@@ -417,7 +417,7 @@ void ForceState(States target) {
     break;
 
   default:
-    dataFile.println("Force State Switch ERROR at time: " + String(millis()));
+    // dataFile.println("Force State Switch ERROR at time: " + String(millis()));
 
     break;
   }

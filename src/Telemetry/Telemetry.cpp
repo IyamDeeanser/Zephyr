@@ -1,9 +1,9 @@
 #include "Telemetry.h"
 
-#define Serial1 SerialUSB // !! COMMENT
+// #define Serial1 SerialUSB // !! COMMENT
 
 void Telemetry::begin() {
-    // Serial1.begin(115200); // !! UNCOMMENT
+    Serial1.begin(115200); // !! UNCOMMENT
 }
 
 void Telemetry::transmit(vec3 ori, vec3 accel, vec3 gyro, float altitude, float positionX, float rwValue, float batteryVoltage, const int & systemState, const bool & cameraState, bool reactionWheelState, float onTimeSec, float flightTimeSec, float pressure, float imuTemp, float baroTemp, float GPSSats, float latitude, float longitude) {
