@@ -7,4 +7,4 @@ Team Zephyr's flight and GCS code repository for the 2022 European Space Agency 
 - Jessica Tang
 - Vhea He
 - Kentarou Howard
- 
+- David Liu
