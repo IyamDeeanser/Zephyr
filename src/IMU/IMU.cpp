@@ -39,7 +39,7 @@ void IMU::getGyroBias() {
     const static unsigned long startTime = millis();
     static int loopNum = 0;
     const int delayTime = 6; // in milliseconds
-    const int totalLoops = 1000;
+    const int totalLoops = 2000;
 
     if (biasComplete) return;
 
@@ -55,7 +55,7 @@ void IMU::getGyroBias() {
 
     if (loopNum > totalLoops) biasComplete = true;
 
-    gyroBias.x = gyroBias.x / 1000;
-    gyroBias.y = gyroBias.y / 1000;
-    gyroBias.z = gyroBias.z / 1000;
+    gyroBias.x = gyroBias.x / 2000;
+    gyroBias.y = gyroBias.y / 2000;
+    gyroBias.z = gyroBias.z / 2000;
 }
